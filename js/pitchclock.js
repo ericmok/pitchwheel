@@ -1,8 +1,8 @@
 LOG_NORMALIZER = Math.log(2) - Math.log(1);
-TEMPERAMENT = 12;
-INVERSE_TEMPERAMENT = 1.0 / TEMPERAMENT;
-FREQUENCY_RATIO_FOR_TEMPERAMENT = Math.pow(2, 1.0/TEMPERAMENT);
-BASE_PITCH = 220;
+//TEMPERAMENT = 12;
+//INVERSE_TEMPERAMENT = 1.0 / TEMPERAMENT;
+//FREQUENCY_RATIO_FOR_TEMPERAMENT = Math.pow(2, 1.0/TEMPERAMENT);
+//BASE_PITCH = 220;
 
 
 function Control(ctx, pitchClass, options) {
@@ -19,7 +19,7 @@ function Control(ctx, pitchClass, options) {
   
   this.gain.gain.value = 1;
   
-  this.oscillator.frequency.value = pitchClass || BASE_PITCH;
+  this.oscillator.frequency.value = pitchClass || this.ctx.basePitch;
   this.oscillator.connect(this.gain);
   this.oscillator.start();
   
@@ -63,26 +63,6 @@ function Control(ctx, pitchClass, options) {
   this.element.appendChild(this.guides[0].line);
   this.element.appendChild(this.text);
   
-  this.circlemousemove = function(ev) {
-    
-    // Make sure mouse is down
-    if (ev.which !== 1) { return; }
-    
-    console.log('move');
-    //var boundingClientRect = ev.currentTarget.getBoundingClientRect();    
-    //var x = ev.clientX - boundingClientRect.left;
-    //var y = ev.clientY - boundingClientRect.top;    
-    
-    //pitchControl.setAttribute('cx', ev.clientX - boundingClientRect.left);
-    //pitchControl.setAttribute('cy', ev.clientY - boundingClientRect.top);
-
-    //console.log((ev.clientX - boundingClientRect.left) + ',' + (ev.clientY - boundingClientRect.top));
-
-    //pointToPitch(ev.clientX - boundingClientRect.left - 400, ev.clientY - boundingClientRect.top - 400);  
-  };
-    
-  this.circle.mousemove = this.circlemousemove;
-  
   this.setNote(pitchClass);
 };
 
@@ -109,9 +89,9 @@ Control.prototype.pointToPitch = function(x, y) {
   // If there are 12 keys, then 0.4 tells you what key
   // Also equivalent to dividing temperament01 by the 
   // fraction per key
-  var keyInTemperament = temperament01 * TEMPERAMENT;
+  var keyInTemperament = temperament01 * this.ctx.temperament;
   
-  var frequency = Math.pow(FREQUENCY_RATIO_FOR_TEMPERAMENT, keyInTemperament) * BASE_PITCH;
+  var frequency = Math.pow(this.ctx.frequencyRatioForTemperament, keyInTemperament) * this.ctx.basePitch;
   
   // Assume that the max normal is 1.0 and represents the highest octave
   // Norm is (0,1] -> 4 octaves
@@ -144,7 +124,7 @@ Control.prototype.setNote = function(hz) {
   // This gain function is arbitrary
   // Ideally the gain is 0.5 at 2 * 880 and 1.0 at 220
   //var gainScale = 1.75 - (3 * Math.log(hz) / Math.log(Math.pow(BASE_PITCH, this.NUMBER_OCTAVES + 1)));
-  var highestFreq = BASE_PITCH * Math.pow(2, this.NUMBER_OCTAVES);
+  var highestFreq = this.ctx.basePitch * Math.pow(2, this.NUMBER_OCTAVES);
   var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
   
   this.gain.gain.value = gainScale;
@@ -152,7 +132,7 @@ Control.prototype.setNote = function(hz) {
   // Distance from hz to base pitch in log scale, but linearly normalized by log(2) - log(1)
   // Linear scale, each linear unit as the LOG_NORMALIZER
   // Each unit of LOG_NORMALIZER represents an octave on the log scale
-  var val = ((Math.log(this.oscillator.frequency.value) - Math.log(BASE_PITCH)) / LOG_NORMALIZER);
+  var val = ((Math.log(this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER);
 
   // Normalize to single octave (0,R) -> (0,2) -> (0,2*pi)
   var angle = (val % 2) * 2 * Math.PI;
@@ -198,9 +178,9 @@ Control.prototype.display = function(angle, magnitude, text) {
   
   this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
   this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
-  this.text.innerHTML = text.toFixed(2) + 'Hz (' + this.gain.gain.value.toFixed(2) + ')';
+  this.text.innerHTML = text.toFixed(2) + 'Hz'; // (' + this.gain.gain.value.toFixed(2) + ')';
 
-  var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(BASE_PITCH)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
+  var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
   
   var gx = Math.cos(guideVal);
   var gy = Math.sin(guideVal);
@@ -210,8 +190,18 @@ Control.prototype.display = function(angle, magnitude, text) {
 };
 
 
-function PitchClock() {
+function PitchClock(options) {
   var _this = this;
+  
+  options = options || {};
+  this.temperament = options.temperament || 12;
+  this.basePitch = options.basePitch || 220;
+  
+  Object.defineProperty(this, 'frequencyRatioForTemperament', {
+    get: function() {
+      return Math.pow(2, 1 / _this.temperament);
+    }
+  });
   
   this.audioCtx = null;
   this.initialized = false;
@@ -238,11 +228,6 @@ function PitchClock() {
     var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
     
     // Normalized (Radius = 1)
-    //x = x / (boundingClientRect.width / 2);
-    //y = y / (boundingClientRect.height / 2);
-    
-    // Normalized to percentages?
-    // When (x,y) -> (50,50) Then (x,y) => (1,1)
     x = x / (boundingClientRect.width / 2);
     y = y / (boundingClientRect.height / 2);
     
@@ -380,14 +365,14 @@ function PitchClock() {
 PitchClock.prototype.renderTemperamentGuides = function() {
   this.temperamentGuides = [];
   
-  for (var i = 0; i < TEMPERAMENT; i++) {
+  for (var i = 0; i < this.temperament; i++) {
     var tempGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
     var temp = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     temp.setAttribute('x1', '50%');
     temp.setAttribute('y1', '50%');
-    var tempX = (40*Math.cos(i / TEMPERAMENT * 2 * Math.PI) + 50);
-    var tempY = (40*Math.sin(i / TEMPERAMENT * 2 * Math.PI) + 50);
+    var tempX = (40*Math.cos(i / this.temperament * 2 * Math.PI) + 50);
+    var tempY = (40*Math.sin(i / this.temperament * 2 * Math.PI) + 50);
     temp.setAttribute('x2', tempX + '%');
     temp.setAttribute('y2', tempY + '%');
     temp.setAttribute('stroke', '#AAAADF');
