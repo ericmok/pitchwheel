@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+      
+        <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+        <link rel="import" href="bower_components/polymer/polymer.html" />
+      
+        <link rel="import" href="bower_components/core-icons/core-icons.html" />
+        <link rel="import" href="bower_components/core-icons/av-icons.html" />
+        <link rel="import" href="bower_components/core-iconset/core-iconset.html" />
+
+        <link rel="import" href="bower_components/paper-fab/paper-fab.html" />
+      
+        <title>Hello World</title>
+    </head>
+    <body>
+        
+        <polymer-element name="x-ray">
+          <template>
+            <line id="line" x1="50%" y1="50%" x2="20%" y2="50%" stroke="red" stroke-width="2" on-mousedown="{{mousedown}}" />
+          </template>
+          <script>
+            Polymer({
+              mousedown: function(ev) {
+                console.log('mouse down');
+              }
+            });
+          </script>
+        </polymer-element>
+      
+        <div class="app">
+            <div class="inner-app">
+                              
+                <div id="deviceready">
+                  
+                    <div style="width: 300px; height: 300px;">
+                      <svg height="100%" width="100%" style="border: solid 1px #DDD; overflow: visible;" id="spinner">
+                      </svg>
+                      <paper-fab icon="av:volume-up" onClick="pc.toggle()"></paper-fab>
+                    </div>
+                    <div id="pitchDisplay"></div>
+
+                    <div class="event received">
+                        <paper-fab icon="av:volume-up" onClick="doThis()"></paper-fab>
+                    </div>
+                    <template>
+<!--
+                        <circle cx="50%" cy = "50%" r="50%" stroke="black" stroke-width="3" fill="#DDDDDD" />
+                        <line id="pitchLine" x1="50%" y1="50%" x2="20%" y2="50%" stroke="red" stroke-width="2" />
+                        <circle id="pitchControl" cx="50%" cy="50%" r="2%" stroke-width="0" fill="#FF4444" />
+                        <x-ray></x-ray>
+-->
+                      <canvas id="canvas">
+                      </canvas>
+
+                                        
+                      <div class="event listening">
+                          <h2>Connecting to Device</h2>
+                      </div>
+                    </template>
+
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script src="dist.js"></script>
+    </body>
+</html>
