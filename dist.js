@@ -316,6 +316,7 @@ function Control(ctx, pitchClass, options) {
   
   this.ctx = ctx;
   this.pitchClass = pitchClass;
+  this.color = options.color || '#EA3131';
   
   this.NUMBER_OCTAVES = options.NUMBER_OCTAVES || 3;
   
@@ -332,7 +333,7 @@ function Control(ctx, pitchClass, options) {
   this.element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   
   this.line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  this.line.setAttribute('stroke', '#DD2222');
+  this.line.setAttribute('stroke', this.color);
   this.line.setAttribute('stroke-width', '0.02');
   
   this.line.setAttribute('x1', '0');
@@ -343,11 +344,11 @@ function Control(ctx, pitchClass, options) {
   this.circle.setAttribute('cx', '0');
   this.circle.setAttribute('cy', '0');
   this.circle.setAttribute('r', '0.03');
-  this.circle.setAttribute('fill', '#FF3333');
+  this.circle.setAttribute('fill', this.color);
   
   this.text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   this.text.setAttribute('alignment-baseline', 'baseline');
-  this.text.setAttribute('stroke', '#888888');
+  this.text.setAttribute('stroke', '#AAAAAA');
   this.text.setAttribute('stroke-width', '0.005');
   this.text.setAttribute('font-size', '0.1');
   this.text.innerHTML = pitchClass + 'Hz';
@@ -489,8 +490,8 @@ Control.prototype.display = function(angle, magnitude, text) {
   
   //this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
   //this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
-  this.text.setAttribute('x', (x + ((x > 0) ? 0.02 : -0.02)));
-  this.text.setAttribute('y', (y + ((x > 0) ? 0.02 : -0.04)));
+  this.text.setAttribute('x', (x + ((x > 0) ? 0.03 : -0.03)));
+  this.text.setAttribute('y', (y + ((x > 0) ? 0.03 : -0.05)));
   this.text.innerHTML = text.toFixed(2) + 'Hz'; // (' + this.gain.gain.value.toFixed(2) + ')';
 
   var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
