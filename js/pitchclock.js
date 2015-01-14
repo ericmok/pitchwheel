@@ -27,36 +27,37 @@ function Control(ctx, pitchClass, options) {
   
   this.line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   this.line.setAttribute('stroke', '#DD2222');
-  this.line.setAttribute('stroke-width', '4');
+  this.line.setAttribute('stroke-width', '0.02');
   
-  this.line.setAttribute('x1', '50%');
-  this.line.setAttribute('y1', '50%');
+  this.line.setAttribute('x1', '0');
+  this.line.setAttribute('y1', '0');
   
   this.circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  this.circle.setAttribute('stroke-width', '0');
-  this.circle.setAttribute('cx', '50%');
-  this.circle.setAttribute('cy', '50%');
-  this.circle.setAttribute('r', '2.5%');
+  this.circle.setAttribute('stroke-width', '0.005');
+  this.circle.setAttribute('cx', '0');
+  this.circle.setAttribute('cy', '0');
+  this.circle.setAttribute('r', '0.03');
   this.circle.setAttribute('fill', '#FF3333');
   
   this.text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  this.text.setAttribute('alignment-baseline', 'baseline');
   this.text.setAttribute('stroke', '#888888');
-  //this.text.setAttribute('font-size', '2%');
+  this.text.setAttribute('stroke-width', '0.005');
+  this.text.setAttribute('font-size', '0.1');
   this.text.innerHTML = pitchClass + 'Hz';
   
+  this.line.setAttribute('x1', '0');
+  this.line.setAttribute('y1', '0');
   
   this.guides = [];
   this.guides.push({
     line: document.createElementNS('http://www.w3.org/2000/svg', 'line'),
     ratio: (3/2)
   });
-  this.guides[0].line.setAttribute('x1', '50%');
-  this.guides[0].line.setAttribute('y1', '50%');
-  this.guides[0].line.setAttribute('stroke', '#2222FF');
-  this.guides[0].line.setAttribute('stroke-width', '1');
-  
-  this.line.setAttribute('x1', '50%');
-  this.line.setAttribute('y1', '50%');
+  this.guides[0].line.setAttribute('x1', '0');
+  this.guides[0].line.setAttribute('y1', '0');
+  this.guides[0].line.setAttribute('stroke', '#FF8888');
+  this.guides[0].line.setAttribute('stroke-width', '0.006');
   
   this.element.appendChild(this.line);
   this.element.appendChild(this.circle);
@@ -70,6 +71,8 @@ function Control(ctx, pitchClass, options) {
 Take coordinate in the wheel and set the frequency from it.
 */
 Control.prototype.pointToPitch = function(x, y) {
+  console.log('point to: (' + x.toFixed(2) + ',' + y.toFixed(2) + ')');
+  
   var norm = Math.sqrt(x * x + y * y);
   
   x = x / norm;
@@ -158,7 +161,8 @@ Control.prototype.display = function(angle, magnitude, text) {
   //console.log('draw y: ' + y);
   
   var spinnerRadius = this.ctx.spinnerRadius;
-  spinnerRadius = spinnerRadius.substr(0, spinnerRadius.length - 1);
+  //var spinnerRadius = 1.0;
+  //spinnerRadius = spinnerRadius.substr(0, spinnerRadius.length - 1);
   
   // 25% length at 1 magnitude
   // But 25% length is half of 100% of the width of svg
@@ -171,13 +175,15 @@ Control.prototype.display = function(angle, magnitude, text) {
   //console.log('draw fx: ' + (x + 50));
   //console.log('draw fy: ' + (y + 50));
   
-  this.line.setAttribute('x2', (x + 50) + '%');
-  this.line.setAttribute('y2', (y + 50) + '%');
-  this.circle.setAttribute('cx', (x + 50) + '%');
-  this.circle.setAttribute('cy', (y + 50) + '%');
+  this.line.setAttribute('x2', (x));
+  this.line.setAttribute('y2', (y));
+  this.circle.setAttribute('cx', (x));
+  this.circle.setAttribute('cy', (y));
   
-  this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
-  this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
+  //this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
+  //this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
+  this.text.setAttribute('x', (x + ((x > 0) ? 0.02 : -0.02)));
+  this.text.setAttribute('y', (y + ((x > 0) ? 0.02 : -0.04)));
   this.text.innerHTML = text.toFixed(2) + 'Hz'; // (' + this.gain.gain.value.toFixed(2) + ')';
 
   var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
@@ -185,8 +191,8 @@ Control.prototype.display = function(angle, magnitude, text) {
   var gx = Math.cos(guideVal);
   var gy = Math.sin(guideVal);
 
-  this.guides[0].line.setAttribute('x2', (mx*gx + 50) + '%');
-  this.guides[0].line.setAttribute('y2', (my*gy + 50) + '%');
+  this.guides[0].line.setAttribute('x2', (mx*gx));
+  this.guides[0].line.setAttribute('y2', (my*gy));
 };
 
 
@@ -213,7 +219,7 @@ function PitchClock(options) {
   /**
   Radius of the wheel. Currently parsed as a percentage.
   */
-  this._SPINNER_RADIUS = '45%';
+  this._SPINNER_RADIUS = 1;
   
   this.temperamentNames = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
   
@@ -243,20 +249,13 @@ function PitchClock(options) {
       var cx = control.circle.getAttribute('cx');
       var cy = control.circle.getAttribute('cy');
       
-      var pcx = (cx.substr(0, cx.length - 1) - 50) / 100;
-      var pcy = (cy.substr(0, cy.length - 1) - 50) / 100;
+      //var pcx = (cx.substr(0, cx.length - 1) - 50) / 100;
+      //var pcy = (cy.substr(0, cy.length - 1) - 50) / 100;
+      var pcx = cx;
+      var pcy = cy;
 
       console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
       console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
-
-      var circleSize = control.circle.getAttribute('r');
-      console.log('circleSize: ' + circleSize);
-      if (circleSize.indexOf('%')) {
-        circleSize = circleSize.substr(0, circleSize.length - 1);
-      }
-      circleSize = circleSize / 100;
-
-      console.log('circleSize: ' + circleSize);
 
       var distance = Math.sqrt(Math.pow(pcx - x, 2) + Math.pow(pcy - y, 2));
       console.log('distance: ' + distance);
@@ -265,9 +264,6 @@ function PitchClock(options) {
         closest = distance;
         closestControl = control;
       }
-      //if (distance < 0.3) {
-        //control.pointToPitch(x, y);
-      //}
     }.bind(this));
     
     closestControl.pointToPitch(x, y);
@@ -286,11 +282,11 @@ function PitchClock(options) {
 
       this.element = document.getElementById(id);
       this.spinner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      this.spinner.setAttribute('cx', '50%');
-      this.spinner.setAttribute('cy', '50%');
+      this.spinner.setAttribute('cx', '0');
+      this.spinner.setAttribute('cy', '0');
       this.spinner.setAttribute('r', this._SPINNER_RADIUS);
       this.spinner.setAttribute('stroke', '#777799');
-      this.spinner.setAttribute('stroke-width', '2');
+      this.spinner.setAttribute('stroke-width', '0.01');
       this.spinner.setAttribute('fill', '#EEEEEE');
 
       //this.spinner.addEventListener('mousedown', this.mousemove);
@@ -303,9 +299,9 @@ function PitchClock(options) {
       console.log(this.element);
       console.log(this.spinner);
       
-      var spinnerRect = this.spinner.getBoundingClientRect();
-      this.width = spinnerRect.width;
-      this.height = spinnerRect.height;
+      var rect = this.element.getBoundingClientRect();
+      this.width = rect.width;
+      this.height = rect.height;
       
       this.renderTemperamentGuides();
     }
@@ -369,20 +365,22 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var tempGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
     var temp = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    temp.setAttribute('x1', '50%');
-    temp.setAttribute('y1', '50%');
-    var tempX = (40*Math.cos(i / this.temperament * 2 * Math.PI) + 50);
-    var tempY = (40*Math.sin(i / this.temperament * 2 * Math.PI) + 50);
-    temp.setAttribute('x2', tempX + '%');
-    temp.setAttribute('y2', tempY + '%');
+    temp.setAttribute('x1', '0');
+    temp.setAttribute('y1', '0');
+    var tempX = (Math.cos(i / this.temperament * 2 * Math.PI));
+    var tempY = (Math.sin(i / this.temperament * 2 * Math.PI));
+    
+    temp.setAttribute('x2', .618 * tempX);
+    temp.setAttribute('y2', .618 * tempY);
     temp.setAttribute('stroke', '#AAAADF');
+    temp.setAttribute('stroke-width', '0.005');
     
     var annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    annotation.setAttribute('x', (1.3*(tempX-50) + 50) + '%');
-    annotation.setAttribute('y', (1.3*(tempY-50) + 50) + '%');
+    annotation.setAttribute('x', (1.13 * (tempX)));
+    annotation.setAttribute('y', (1.13 * (tempY + 0.03)));
     annotation.setAttribute('text-anchor', 'middle');
-    annotation.setAttribute('alignment-baseline', 'middle');
-    annotation.setAttribute('font-size', '16');
+    annotation.setAttribute('alignment-baseline', 'central');
+    annotation.setAttribute('font-size', '0.1');
     annotation.innerHTML = this.temperamentNames[i];
 
     tempGroup.appendChild(temp);
