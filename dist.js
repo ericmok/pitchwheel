@@ -587,6 +587,8 @@ function PitchClock(options) {
       this.gain.connect(this.audioCtx.destination);
 
       this.element = document.getElementById(id);
+      this.element.setAttribute('viewBox', '-1 -1 2 2');
+      this.element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       this.spinner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       this.spinner.setAttribute('cx', '0');
       this.spinner.setAttribute('cy', '0');
