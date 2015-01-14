@@ -298,7 +298,7 @@ pc.initialize('spinner');
 //pc.addControl(277.18); // C#
 //pc.addControl(220*(1)); // A3
 pc.addControl(2*261.63);
-pc.addControl(2*329.63);
+pc.addControl(329.63);
 pc.addControl(2*391.5); // 392 is equal temperament, but this is perfect fifth
 
 console.log('index');

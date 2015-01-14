@@ -299,7 +299,7 @@ pc.initialize('spinner');
 //pc.addControl(277.18); // C#
 //pc.addControl(220*(1)); // A3
 pc.addControl(2*261.63);
-pc.addControl(2*329.63);
+pc.addControl(329.63);
 pc.addControl(2*391.5); // 392 is equal temperament, but this is perfect fifth
 
 console.log('index');
@@ -350,8 +350,23 @@ function Control(ctx, pitchClass, options) {
   //this.text.setAttribute('font-size', '2%');
   this.text.innerHTML = pitchClass + 'Hz';
   
+  
+  this.guides = [];
+  this.guides.push({
+    line: document.createElementNS('http://www.w3.org/2000/svg', 'line'),
+    ratio: (3/2)
+  });
+  this.guides[0].line.setAttribute('x1', '50%');
+  this.guides[0].line.setAttribute('y1', '50%');
+  this.guides[0].line.setAttribute('stroke', '#2222FF');
+  this.guides[0].line.setAttribute('stroke-width', '1');
+  
+  this.line.setAttribute('x1', '50%');
+  this.line.setAttribute('y1', '50%');
+  
   this.element.appendChild(this.line);
   this.element.appendChild(this.circle);
+  this.element.appendChild(this.guides[0].line);
   this.element.appendChild(this.text);
   
   this.circlemousemove = function(ev) {
@@ -442,6 +457,7 @@ Control.prototype.setNote = function(hz) {
   
   // Distance from hz to base pitch in log scale, but linearly normalized by log(2) - log(1)
   // Linear scale, each linear unit as the LOG_NORMALIZER
+  // Each unit of LOG_NORMALIZER represents an octave on the log scale
   var val = ((Math.log(this.oscillator.frequency.value) - Math.log(BASE_PITCH)) / LOG_NORMALIZER);
 
   // Normalize to single octave (0,R) -> (0,2) -> (0,2*pi)
@@ -460,15 +476,7 @@ Control.prototype.setNote = function(hz) {
 Controls the line and circle
 */
 Control.prototype.display = function(angle, magnitude, text) {
-  //var x = (40/3) * Math.cos(angle);
-  //var y = (40/3) * Math.sin(angle);
-  
-  ///////////////////////////////
-  //magnitude is multiplied again...
-  ///////////////////////////////
-  
-  //console.log('mag: ' + magnitude);
-  //console.log('width: ' + this.ctx.width);
+
   var x = Math.cos(angle);// * (this.ctx.width / 8);
   var y = Math.sin(angle);// * (this.ctx.width / 8);
   
@@ -482,12 +490,7 @@ Control.prototype.display = function(angle, magnitude, text) {
   // But 25% length is half of 100% of the width of svg
   var mx = (1.0 / this.NUMBER_OCTAVES) * magnitude * spinnerRadius;
   var my = (1.0 / this.NUMBER_OCTAVES) * magnitude * spinnerRadius;
-  //var mx = 50;
-  //var my = 50;
-  
-  //x /= 2; // 50% length at 1.0
-  //y /= 2;
-  
+
   x *= mx;
   y *= my;
   
@@ -501,9 +504,15 @@ Control.prototype.display = function(angle, magnitude, text) {
   
   this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
   this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
-  //this.text.setAttribute('x', 0 + '%');
-  //this.text.setAttribute('y', 80 + '%');
   this.text.innerHTML = text.toFixed(2) + 'Hz (' + this.gain.gain.value.toFixed(2) + ')';
+
+  var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(BASE_PITCH)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
+  
+  var gx = Math.cos(guideVal);
+  var gy = Math.sin(guideVal);
+
+  this.guides[0].line.setAttribute('x2', (mx*gx + 50) + '%');
+  this.guides[0].line.setAttribute('y2', (my*gy + 50) + '%');
 };
 
 
