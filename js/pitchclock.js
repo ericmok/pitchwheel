@@ -136,6 +136,7 @@ Control.prototype.setNote = function(hz) {
   
   // Distance from hz to base pitch in log scale, but linearly normalized by log(2) - log(1)
   // Linear scale, each linear unit as the LOG_NORMALIZER
+  // Each unit of LOG_NORMALIZER represents an octave on the log scale
   var val = ((Math.log(this.oscillator.frequency.value) - Math.log(BASE_PITCH)) / LOG_NORMALIZER);
 
   // Normalize to single octave (0,R) -> (0,2) -> (0,2*pi)
