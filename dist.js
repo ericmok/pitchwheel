@@ -466,8 +466,8 @@ Control.prototype.display = function(angle, magnitude, text) {
   
   //console.log('mag: ' + magnitude);
   //console.log('width: ' + this.ctx.width);
-  var x = Math.cos(angle / 3 * 2);// * (this.ctx.width / 8);
-  var y = Math.sin(angle / 3 * 2);// * (this.ctx.width / 8);
+  var x = Math.cos(angle);// * (this.ctx.width / 8);
+  var y = Math.sin(angle);// * (this.ctx.width / 8);
   
   //console.log('draw x: ' + x);
   //console.log('draw y: ' + y);
@@ -634,7 +634,15 @@ function PitchClock() {
   });
   
   this.play = function() {
-    this.gain.gain.value = 0.4;
+    var now = this.audioCtx.currentTime;
+    this.gain.gain.cancelScheduledValues(now);
+    this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+    this.gain.gain.linearRampToValueAtTime(0.65, now + 0.05);
+    this.gain.gain.linearRampToValueAtTime(0.5, now + 0.1);
+    this.gain.gain.exponentialRampToValueAtTime(0.4, now + 0.2);
+    this.gain.gain.linearRampToValueAtTime(0.3, now + 0.6);
+    this.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
+    //this.gain.gain.value = 0.4;
     this.playing = true;
   };
   this.stop = function() {
@@ -643,12 +651,13 @@ function PitchClock() {
   };
   
   this.toggle = function() {
-    this.playing = !this.playing;
-    if (this.playing) { 
-      this.play();
-    } else {
-      this.stop();
-    }
+//    this.playing = !this.playing;
+//    if (this.playing) { 
+//      this.play();
+//    } else {
+//      this.stop();
+//    }
+    this.play();
   };
   
   this.addControl = function(hz) {
