@@ -142,7 +142,10 @@ Control.prototype.setNote = function(hz) {
   var angle = (val % 2) * 2 * Math.PI;
 
   // 12 logNormalizer steps = 1 octave
-  var magnitude = Math.floor(val % TEMPERAMENT) + 1;
+  //console.log('val: ' + val);
+  //var magnitude = Math.floor(val % TEMPERAMENT) + 1;
+  //console.log('val % TEMPERAMENT: ' + magnitude);
+  var magnitude = Math.ceil(val);
 
   this.display(angle, magnitude, hz);
 };
