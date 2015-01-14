@@ -365,15 +365,18 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var temp = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     temp.setAttribute('x1', '50%');
     temp.setAttribute('y1', '50%');
-    var tempX = (44*Math.cos(i / TEMPERAMENT * 2 * Math.PI) + 50);
-    var tempY = (44*Math.sin(i / TEMPERAMENT * 2 * Math.PI) + 50);
+    var tempX = (40*Math.cos(i / TEMPERAMENT * 2 * Math.PI) + 50);
+    var tempY = (40*Math.sin(i / TEMPERAMENT * 2 * Math.PI) + 50);
     temp.setAttribute('x2', tempX + '%');
     temp.setAttribute('y2', tempY + '%');
     temp.setAttribute('stroke', '#AAAADF');
     
     var annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    annotation.setAttribute('x', tempX + '%');
-    annotation.setAttribute('y', tempY + '%');
+    annotation.setAttribute('x', (1.3*(tempX-50) + 50) + '%');
+    annotation.setAttribute('y', (1.3*(tempY-50) + 50) + '%');
+    annotation.setAttribute('text-anchor', 'middle');
+    annotation.setAttribute('alignment-baseline', 'middle');
+    annotation.setAttribute('font-size', '16');
     annotation.innerHTML = this.temperamentNames[i];
 
     tempGroup.appendChild(temp);
