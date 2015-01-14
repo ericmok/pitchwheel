@@ -101,6 +101,7 @@ Control.prototype.pointToPitch = function(x, y) {
   // We round to the nearest octave (0,4]
   
   //var discretizedOctave = Math.ceil((norm / (1.0/4)));
+  norm = Math.min(norm, 0.99);
   var discretizedOctave = Math.floor((norm * this.NUMBER_OCTAVES));
   // TODO: debug
   //discretizedOctave = norm;
