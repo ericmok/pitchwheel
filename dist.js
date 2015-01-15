@@ -762,7 +762,7 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     annotation.setAttribute('transform', 'scale(0.01)' + translationString);
     annotation.setAttribute('x', '0');
     annotation.setAttribute('y', '0');
-    annotation.setAttribute('stroke', 'rgb(188,190,168)');
+    annotation.setAttribute('fill', 'rgb(188,190,168)');
     annotation.setAttribute('text-anchor', 'middle');
     annotation.setAttribute('alignment-baseline', 'central');
     annotation.setAttribute('font-size', '12');
