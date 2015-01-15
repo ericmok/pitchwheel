@@ -355,7 +355,7 @@ function Control(ctx, pitchClass, options) {
   this.line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   this.line.setAttribute('stroke', this.color);
   this.line.setAttribute('stroke-width', '0.02');
-  
+  this.line.style.transition = 'all';
   this.line.setAttribute('x1', '0');
   this.line.setAttribute('y1', '0');
   
@@ -417,7 +417,7 @@ Control.prototype.pointToPitch = function(x, y) {
   var temperament01 = angle / (2 * Math.PI);
   
   // Subdivisions
-  temperament01 = Math.round(temperament01 * this.ctx.temperament * 8) / (this.ctx.temperament * 8);
+  temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
   
   // 100% = 12 steps = 1 whole octave
   
@@ -464,7 +464,8 @@ Control.prototype.setNote = function(hz) {
   // Ideally the gain is 0.5 at 2 * 880 and 1.0 at 220
   //var gainScale = 1.75 - (3 * Math.log(hz) / Math.log(Math.pow(BASE_PITCH, this.NUMBER_OCTAVES + 1)));
   var highestFreq = this.ctx.basePitch * Math.pow(2, this.NUMBER_OCTAVES);
-  var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
+  //var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
+  var gainScale = (2*highestFreq - hz)/(2*highestFreq);
   
   this.gain.gain.value = gainScale;
   
@@ -536,7 +537,7 @@ Control.prototype.display = function(angle, magnitude, text) {
   var transformString = ' translate(' + 100*(tx) + ',' + 100*(ty) + ')';
   this.text.setAttribute('transform', 'scale(0.009)' + transformString);
                          
-  this.text.innerHTML = text.toFixed(2) + 'Hz'; // (' + this.gain.gain.value.toFixed(2) + ')';
+  this.text.innerHTML = text.toFixed(2) + 'Hz' + ' (' + this.gain.gain.value.toFixed(2) + ')';
 
   var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
   
