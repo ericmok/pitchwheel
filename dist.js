@@ -369,7 +369,8 @@ function Control(ctx, pitchClass, options) {
   this.text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   this.text.setAttribute('text-rendering', 'geometricPrecision');
   this.text.setAttribute('alignment-baseline', 'baseline');
-  this.text.setAttribute('stroke', '#AAAAAA');
+  this.text.setAttribute('text-anchor', 'middle');
+  this.text.setAttribute('fill', '#AAAAAA');
   this.text.setAttribute('stroke-width', '0.005');
   this.text.setAttribute('font-size', '12');
   this.text.innerHTML = pitchClass + 'Hz';
@@ -494,7 +495,7 @@ Control.prototype.display = function(angle, magnitude, text) {
 
   var x = Math.cos(angle);// * (this.ctx.width / 8);
   var y = Math.sin(angle);// * (this.ctx.width / 8);
-  
+
   //console.log('draw x: ' + x);
   //console.log('draw y: ' + y);
   
@@ -507,6 +508,9 @@ Control.prototype.display = function(angle, magnitude, text) {
   var mx = (1.0 / this.NUMBER_OCTAVES) * magnitude * spinnerRadius;
   var my = (1.0 / this.NUMBER_OCTAVES) * magnitude * spinnerRadius;
 
+  var normalizedX = x;
+  var normalizedY = y;
+  
   x *= mx;
   y *= my;
   
@@ -518,15 +522,19 @@ Control.prototype.display = function(angle, magnitude, text) {
   this.circle.setAttribute('cx', (x));
   this.circle.setAttribute('cy', (y));
   
-  var tx = (x + ((x > 0) ? 0.03 : -0.03)*x);
-  var ty = (y + ((x > 0) ? 0.03 : -0.05)*y);
+  var tx = 0.18 * normalizedX + x;
+  var ty = 0.18 * normalizedY + y;
+  if (ty > 0) {
+    ty += 0.1;
+  }
+    
   //this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
   //this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
   this.text.setAttribute('x', tx);
   this.text.setAttribute('y', ty);
   
   var transformString = ' translate(' + 100*(tx) + ',' + 100*(ty) + ')';
-  this.text.setAttribute('transform', 'scale(0.01)' + transformString);
+  this.text.setAttribute('transform', 'scale(0.009)' + transformString);
                          
   this.text.innerHTML = text.toFixed(2) + 'Hz'; // (' + this.gain.gain.value.toFixed(2) + ')';
 
@@ -639,7 +647,7 @@ function PitchClock(options) {
       this.spinner.setAttribute('cx', '0');
       this.spinner.setAttribute('cy', '0');
       this.spinner.setAttribute('r', this._SPINNER_RADIUS);
-      this.spinner.setAttribute('stroke', '#8888AF');
+      this.spinner.setAttribute('stroke', 'rgb(236,200,166)');
       this.spinner.setAttribute('stroke-width', '0.01');
       this.spinner.setAttribute('fill', '#EEEEEE');
 
@@ -729,7 +737,8 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     
     temp.setAttribute('x2', .618 * tempX);
     temp.setAttribute('y2', .618 * tempY);
-    temp.setAttribute('stroke', '#AAAADF');
+    //temp.setAttribute('stroke', '#AAAADF');
+    temp.setAttribute('stroke', 'rgb(120,173,165)');
     temp.setAttribute('stroke-width', '0.005');
     
     var lowerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -738,10 +747,10 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var lowerLineX = (Math.cos(i / this.temperament * 2 * Math.PI));
     var lowerLineY = (Math.sin(i / this.temperament * 2 * Math.PI));
     
-    lowerLine.setAttribute('x2', .618 * .33 * lowerLineX);
-    lowerLine.setAttribute('y2', .618 * .33 * lowerLineY);
-    lowerLine.setAttribute('stroke', '#88889F');
-    lowerLine.setAttribute('stroke-width', '0.006');
+    lowerLine.setAttribute('x2', .33 * lowerLineX);
+    lowerLine.setAttribute('y2', .33 * lowerLineY);
+    lowerLine.setAttribute('stroke', 'rgb(53,113,141)');
+    lowerLine.setAttribute('stroke-width', '0.005');
     
     var annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     //annotation.setAttribute('x', (1.13 * (tempX)));
@@ -753,6 +762,7 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     annotation.setAttribute('transform', 'scale(0.01)' + translationString);
     annotation.setAttribute('x', '0');
     annotation.setAttribute('y', '0');
+    annotation.setAttribute('stroke', 'rgb(188,190,168)');
     annotation.setAttribute('text-anchor', 'middle');
     annotation.setAttribute('alignment-baseline', 'central');
     annotation.setAttribute('font-size', '12');
