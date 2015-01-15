@@ -108,6 +108,9 @@ Control.prototype.pointToPitch = function(x, y) {
   // From (0, 2 * PI) to (0, 1)
   var temperament01 = angle / (2 * Math.PI);
   
+  // Subdivisions
+  temperament01 = Math.round(temperament01 * this.ctx.temperament * 8) / (this.ctx.temperament * 8);
+  
   // 100% = 12 steps = 1 whole octave
   
   // If there are 12 keys, then 0.4 tells you what key
