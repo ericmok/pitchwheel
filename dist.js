@@ -366,10 +366,11 @@ function Control(ctx, pitchClass, options) {
   this.circle.setAttribute('fill', this.color);
   
   this.text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  this.text.setAttribute('text-rendering', 'geometricPrecision');
   this.text.setAttribute('alignment-baseline', 'baseline');
   this.text.setAttribute('stroke', '#AAAAAA');
   this.text.setAttribute('stroke-width', '0.005');
-  this.text.setAttribute('font-size', '0.1');
+  this.text.setAttribute('font-size', '12');
   this.text.innerHTML = pitchClass + 'Hz';
   
   this.line.setAttribute('x1', '0');
@@ -510,10 +511,16 @@ Control.prototype.display = function(angle, magnitude, text) {
   this.circle.setAttribute('cx', (x));
   this.circle.setAttribute('cy', (y));
   
+  var tx = (x + ((x > 0) ? 0.03 : -0.03)*x);
+  var ty = (y + ((x > 0) ? 0.03 : -0.05)*y);
   //this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
   //this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
-  this.text.setAttribute('x', (x + ((x > 0) ? 0.03 : -0.03)));
-  this.text.setAttribute('y', (y + ((x > 0) ? 0.03 : -0.05)));
+  this.text.setAttribute('x', tx);
+  this.text.setAttribute('y', ty);
+  
+  var transformString = ' translate(' + 100*(tx) + ',' + 100*(ty) + ')';
+  this.text.setAttribute('transform', 'scale(0.01)' + transformString);
+                         
   this.text.innerHTML = text.toFixed(2) + 'Hz'; // (' + this.gain.gain.value.toFixed(2) + ')';
 
   var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
@@ -613,6 +620,7 @@ function PitchClock(options) {
       this.element = document.getElementById(id);
       this.element.setAttribute('viewBox', '-1 -1 2 2');
       this.element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      //this.element.setAttribute('text-rendering', 'geometricPrecision');
       this.spinner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       this.spinner.setAttribute('cx', '0');
       this.spinner.setAttribute('cy', '0');
@@ -722,11 +730,18 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     lowerLine.setAttribute('stroke-width', '0.006');
     
     var annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    annotation.setAttribute('x', (1.13 * (tempX)));
-    annotation.setAttribute('y', (1.13 * (tempY + 0.03)));
+    //annotation.setAttribute('x', (1.13 * (tempX)));
+    //annotation.setAttribute('y', (1.13 * (tempY + 0.03)));
+    annotation.setAttribute('text-rendering', 'geometricPrecision');
+    
+    var translationString = ' translate(' + 100 * (1.13 * tempX) + ',' + 100 * (1.13 * tempY) + ')';
+        
+    annotation.setAttribute('transform', 'scale(0.01)' + translationString);
+    annotation.setAttribute('x', '0');
+    annotation.setAttribute('y', '0');
     annotation.setAttribute('text-anchor', 'middle');
     annotation.setAttribute('alignment-baseline', 'central');
-    annotation.setAttribute('font-size', '0.1');
+    annotation.setAttribute('font-size', '12');
     annotation.innerHTML = this.temperamentNames[i];
 
     tempGroup.appendChild(temp);
