@@ -595,7 +595,7 @@ function PitchClock(options) {
       this.spinner.setAttribute('cx', '0');
       this.spinner.setAttribute('cy', '0');
       this.spinner.setAttribute('r', this._SPINNER_RADIUS);
-      this.spinner.setAttribute('stroke', '#777799');
+      this.spinner.setAttribute('stroke', '#8888AF');
       this.spinner.setAttribute('stroke-width', '0.01');
       this.spinner.setAttribute('fill', '#EEEEEE');
 
@@ -685,6 +685,17 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     temp.setAttribute('stroke', '#AAAADF');
     temp.setAttribute('stroke-width', '0.005');
     
+    var lowerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    lowerLine.setAttribute('x1', '0');
+    lowerLine.setAttribute('y1', '0');
+    var lowerLineX = (Math.cos(i / this.temperament * 2 * Math.PI));
+    var lowerLineY = (Math.sin(i / this.temperament * 2 * Math.PI));
+    
+    lowerLine.setAttribute('x2', .618 * .33 * lowerLineX);
+    lowerLine.setAttribute('y2', .618 * .33 * lowerLineY);
+    lowerLine.setAttribute('stroke', '#88889F');
+    lowerLine.setAttribute('stroke-width', '0.006');
+    
     var annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     annotation.setAttribute('x', (1.13 * (tempX)));
     annotation.setAttribute('y', (1.13 * (tempY + 0.03)));
@@ -694,6 +705,7 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     annotation.innerHTML = this.temperamentNames[i];
 
     tempGroup.appendChild(temp);
+    tempGroup.appendChild(lowerLine);
     tempGroup.appendChild(annotation);
     this.element.appendChild(tempGroup);
   }
