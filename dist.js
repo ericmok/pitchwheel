@@ -326,14 +326,15 @@ function Control(ctx, pitchClass, options) {
   this.sympatheticDown = ctx.audioCtx.createOscillator();
   this.sonority = ctx.audioCtx.createOscillator();
   
+  this.SYMPATHETIC_GAIN_MULTIPLIER = 0.1;
   this.sympatheticUpGain = ctx.audioCtx.createGain();
   this.sympatheticDownGain = ctx.audioCtx.createGain();
   this.gain = ctx.audioCtx.createGain();
   
   this.sympatheticUp.connect(this.sympatheticUpGain);
   this.sympatheticDown.connect(this.sympatheticDownGain);
-  this.sympatheticUpGain.gain.value = 0.027;
-  this.sympatheticDownGain.gain.value = 0.027;
+  this.sympatheticUpGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
+  this.sympatheticDownGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
   this.gain.gain.value = 1;
   
   this.oscillator.frequency.value = pitchClass || this.ctx.basePitch;
@@ -413,6 +414,8 @@ Control.prototype.pointToPitch = function(x, y) {
   
   // From (0, 2 * PI) to (0, 1)
   var temperament01 = angle / (2 * Math.PI);
+  
+  // Subdivisions
   temperament01 = Math.round(temperament01 * this.ctx.temperament * 8) / (this.ctx.temperament * 8);
   
   // 100% = 12 steps = 1 whole octave
@@ -463,6 +466,9 @@ Control.prototype.setNote = function(hz) {
   var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
   
   this.gain.gain.value = gainScale;
+  
+  this.sympatheticUpGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
+  this.sympatheticDownGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
   
   // Distance from hz to base pitch in log scale, but linearly normalized by log(2) - log(1)
   // Linear scale, each linear unit as the LOG_NORMALIZER
