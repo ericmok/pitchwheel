@@ -578,10 +578,14 @@ function PitchClock(options) {
     var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
     
     // Normalized (Radius = 1)
-    x = x / (boundingClientRect.width / 2);
-    y = y / (boundingClientRect.height / 2);
+    var mx = x = x / (boundingClientRect.width / 2);
+    var my = y = y / (boundingClientRect.height / 2);
     
     //console.log(x + ',' + y);
+    
+    var norm = Math.sqrt(x*x + y*y);
+    x = x / norm;
+    y = y / norm;    
     
     var closest = 100;
     var closestControl = null;
@@ -597,10 +601,13 @@ function PitchClock(options) {
       //var pcy = (cy.substr(0, cy.length - 1) - 50) / 100;
       var pcx = cx;
       var pcy = cy;
-
+      var pcNorm = Math.sqrt(cx * cx + cy * cy);
+      pcx = pcx / pcNorm;
+      pcy = pcy / pcNorm;
+      
       console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
       console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
-
+      
       var distance = Math.sqrt(Math.pow(pcx - x, 2) + Math.pow(pcy - y, 2));
       console.log('distance: ' + distance);
 
@@ -610,7 +617,7 @@ function PitchClock(options) {
       }
     }.bind(this));
     
-    closestControl.pointToPitch(x, y);
+    closestControl.pointToPitch(mx, my);
   };
   
   /**
