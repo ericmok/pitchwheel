@@ -326,22 +326,30 @@ function Control(ctx, pitchClass, options) {
   this.sympatheticDown = ctx.audioCtx.createOscillator();
   this.sonority = ctx.audioCtx.createOscillator();
   
+  this.SONORITY_GAIN_MULTIPLIER = 0.8;
   this.SYMPATHETIC_GAIN_MULTIPLIER = 0.1;
+  
   this.sympatheticUpGain = ctx.audioCtx.createGain();
   this.sympatheticDownGain = ctx.audioCtx.createGain();
+  this.sonorityGain = ctx.audioCtx.createGain();
   this.gain = ctx.audioCtx.createGain();
-  
+    
   this.sympatheticUp.connect(this.sympatheticUpGain);
   this.sympatheticDown.connect(this.sympatheticDownGain);
   this.sympatheticUpGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
   this.sympatheticDownGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
   this.gain.gain.value = 1;
-  
+    
   this.oscillator.frequency.value = pitchClass || this.ctx.basePitch;
   this.oscillator.connect(this.gain);
   this.oscillator.start();
   
-  this.sonority.connect(this.gain);
+  this.sonorityDelay = ctx.audioCtx.createDelay(6);
+  
+  this.sonority.connect(this.sonorityDelay);
+  this.sonorityDelay.connect(this.sonorityGain);
+  this.sonorityGain.connect(this.gain);
+  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
   this.sonority.start();
   
   this.sympatheticUp.start();
@@ -456,7 +464,7 @@ Control.prototype.setNote = function(hz) {
      
   // Set audio
   this.oscillator.frequency.value = hz;
-  this.sonority.frequency.value = (hz / 2) + 2;
+  this.sonority.frequency.value = (hz / 2) + 1;
   this.sympatheticUp.frequency.value = (hz * this.ctx.frequencyRatioForTemperament);
   this.sympatheticDown.frequency.value = (hz * (1 / this.ctx.frequencyRatioForTemperament));
   
@@ -471,6 +479,7 @@ Control.prototype.setNote = function(hz) {
   
   this.sympatheticUpGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
   this.sympatheticDownGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
+  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
   
   // Distance from hz to base pitch in log scale, but linearly normalized by log(2) - log(1)
   // Linear scale, each linear unit as the LOG_NORMALIZER
@@ -690,8 +699,8 @@ function PitchClock(options) {
     var multiplier = 0.3;
     
     this.gain.gain.setValueAtTime(this.gain.gain.value, now);
-    this.gain.gain.linearRampToValueAtTime(multiplier * 0.65, now + 0.05);
-    this.gain.gain.linearRampToValueAtTime(multiplier * 0.5, now + 0.1);
+    this.gain.gain.linearRampToValueAtTime(multiplier * 0.65, now + 0.04);
+    this.gain.gain.linearRampToValueAtTime(multiplier * 0.5, now + 0.09);
     this.gain.gain.exponentialRampToValueAtTime(multiplier * 0.4, now + 0.2);
     this.gain.gain.linearRampToValueAtTime(multiplier * 0.3, now + 0.6);
     this.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
