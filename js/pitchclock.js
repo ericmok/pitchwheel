@@ -383,7 +383,7 @@ Control.prototype.display = function(angle, magnitude, text) {
   
   // 25% length at 1 magnitude
   // But 25% length is half of 100% of the width of svg
-  if (angle == 0 || approxEquals(angle, 2 * Math.PI, 0.001)) {
+  if (angle == 0) { // || approxEquals(angle, 2 * Math.PI, 0.001)) {
     magnitude += 0.7;
   }
   
@@ -409,8 +409,6 @@ Control.prototype.display = function(angle, magnitude, text) {
     ty += 0.1;
   }
     
-  //this.text.setAttribute('x', (x + ((x > 0) ? 53 : 42)) + '%');
-  //this.text.setAttribute('y', (y + ((x > 0) ? 53 : 57)) + '%');
   this.text.setAttribute('x', tx);
   this.text.setAttribute('y', ty);
   
@@ -489,8 +487,6 @@ function PitchClock(options) {
       var cx = control.circle.getAttribute('cx');
       var cy = control.circle.getAttribute('cy');
       
-      //var pcx = (cx.substr(0, cx.length - 1) - 50) / 100;
-      //var pcy = (cy.substr(0, cy.length - 1) - 50) / 100;
       var pcx = cx;
       var pcy = cy;
       var pcNorm = Math.sqrt(cx * cx + cy * cy);
