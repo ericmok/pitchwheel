@@ -311,6 +311,161 @@ LOG_NORMALIZER = Math.log(2) - Math.log(1);
 //BASE_PITCH = 220;
 
 
+function Voice(audioCtx) {
+  this.ctx = audioCtx;
+  
+  this.oscillator = audioCtx.createOscillator();
+  this.oscillator.frequency.value = 110;
+  this.delay = audioCtx.createDelay(1);
+  this.gain = audioCtx.createGain();
+  this.gain.gain.value = 0;
+  
+  this.oscillator.connect(this.delay);
+  this.delay.connect(this.gain);
+}
+
+Voice.prototype.connect = function(output) {
+  this.oscillator.start();
+  this.gain.connect(output);
+};
+
+Voice.prototype.disconnect = function() {
+  this.oscillator.stop();
+  this.gain.disconnect();
+};
+
+
+function PianoSound(audioCtx, options) {
+  
+  this.SONORITY_GAIN_MULTIPLIER = 0.8;
+  this.SYMPATHETIC_GAIN_MULTIPLIER = 0.1;
+  
+  this.audioCtx = audioCtx;
+  
+  // GAINS
+  
+  // Main
+  this.gain = audioCtx.createGain();
+  this.gain.gain.value = 0;
+  
+  // Sympathetic
+  this.mainVoice = new Voice(audioCtx);
+  this.sympatheticUpVoice = new Voice(audioCtx);
+  this.sympatheticDownVoice = new Voice(audioCtx);
+  this.sonorityVoice = new Voice(audioCtx);
+  
+  this.mainVoice.connect(this.gain);
+  this.sympatheticUpVoice.connect(this.gain);
+  this.sympatheticDownVoice.connect(this.gain);
+  this.sonorityVoice.connect(this.gain);
+  
+  this.frequencyRatioPerTemperament = Math.pow(2, 1/12);
+
+//  this.sympatheticUpGain = audioCtx.createGain();
+//  this.sympatheticUpGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
+//  this.sympatheticUpGain.gain.value = 0;
+//  this.sympatheticDownGain = audioCtx.createGain();
+//  this.sympatheticDownGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
+//  this.sympatheticDownGain.gain.value = 0;
+//  
+//  // Sonority
+//  this.sonorityGain = audioCtx.createGain();
+//  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
+//  this.sonorityDelay = ctx.audioCtx.createDelay(6);
+//  this.sonority.connect(this.sonorityDelay);
+//  this.sonorityDelay.connect(this.sonorityGain);
+//  
+//  // OSCILLATORS
+//  
+//  // Main
+//  this.oscillator = audioCtx.createOscillator();
+//  this.oscillator.frequency.value = 1;
+//  
+//  // Sympathetic
+//  this.sympatheticUp = audioCtx.createOscillator();
+//  this.sympatheticUp.frequency.value = 1;
+//  
+//  this.sympatheticDown = audioCtx.createOscillator();
+//  this.sympatheticDown.frequency.value = 1;
+//  
+//  // Sonority
+//  this.sonority = audioCtx.createOscillator();
+//  this.sonority.frequency.value = 1;
+//  
+//  // CONNECTIONS
+//  
+//  this.oscillator.connect(this.gain);
+//  
+//  this.sympatheticUp.connect(this.sympatheticUpGain);
+//  this.sympatheticUpGain.connect(this.gain);
+//  
+//  this.sympatheticDown.connect(this.sympatheticDownGain);  
+//  this.sympatheticDownGain.connect(this.gain);
+//  
+//  this.sonorityGain.connect(this.gain);
+//  
+//  // START
+//  
+//  this.oscillator.start();
+//  this.sympatheticUp.start();
+//  this.sympatheticDown.start();
+//  this.sonority.start();  
+}
+
+PianoSound.prototype.connect = function(audioNode) {
+  this.gain.connect(audioNode);
+};
+
+PianoSound.prototype.disconnect = function() {
+  this.gain.disconnect();
+};
+
+PianoSound.prototype.setNote = function(hz) {
+  this.mainVoice.oscillator.frequency.value = hz;
+  this.sympatheticUpVoice.oscillator.frequency.value = (hz * this.frequencyRatioPerTemperament);
+  this.sympatheticDownVoice.oscillator.frequency.value = (hz * (1 / this.frequencyRatioPerTemperament));
+  this.sonorityVoice.oscillator.frequency.value = (hz / 2) + 1;
+  
+  this.mainVoice.gain.gain.value = 0.5;
+  this.sympatheticUpVoice.gain.gain.value = 0.5;
+  this.sympatheticDownVoice.gain.gain.value = 0.5;
+  this.sonorityVoice.gain.gain.value = 0.5;
+  
+//  // Set audio
+//  this.oscillator.frequency.value = hz;
+//  this.sonority.frequency.value = (hz / 2) + 1;
+//  this.sympatheticUp.frequency.value = (hz * this.ctx.frequencyRatioForTemperament);
+//  this.sympatheticDown.frequency.value = (hz * (1 / this.ctx.frequencyRatioForTemperament));
+//  
+//  // This gain function is arbitrary
+//  // Ideally the gain is 0.5 at 2 * 880 and 1.0 at 220
+//  //var gainScale = 1.75 - (3 * Math.log(hz) / Math.log(Math.pow(BASE_PITCH, this.NUMBER_OCTAVES + 1)));
+//  var highestFreq = this.ctx.basePitch * Math.pow(2, this.NUMBER_OCTAVES);
+//  //var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
+//  var gainScale = (2*highestFreq - hz)/(2*highestFreq);
+//  
+//  this.gain.gain.value = gainScale;
+//  
+//  this.sympatheticUpGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
+//  this.sympatheticDownGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
+//  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
+};
+
+PianoSound.prototype.play = function(hz, delay) {
+  this.setNote(hz);
+  
+  var now = this.audioCtx.currentTime;
+  this.gain.gain.cancelScheduledValues(now);
+    
+  this.gain.gain.setValueAtTime(0.01, now + delay);
+  this.gain.gain.linearRampToValueAtTime(0.65, now + delay + 0.04);
+  this.gain.gain.linearRampToValueAtTime(0.5, now + delay + 0.09);
+  this.gain.gain.exponentialRampToValueAtTime(0.4, now + delay + 0.2);
+  this.gain.gain.linearRampToValueAtTime(0.3, now + delay + 0.6);
+  this.gain.gain.setTargetAtTime(0, now + delay + 0.9, 0.7);
+};
+
+
 function Control(ctx, pitchClass, options) {
   options = options || {};
   
@@ -321,42 +476,10 @@ function Control(ctx, pitchClass, options) {
   this.NUMBER_OCTAVES = options.NUMBER_OCTAVES || 3;
   
   this.started = false;
-  this.oscillator = ctx.audioCtx.createOscillator();
-  this.sympatheticUp = ctx.audioCtx.createOscillator();
-  this.sympatheticDown = ctx.audioCtx.createOscillator();
-  this.sonority = ctx.audioCtx.createOscillator();
   
-  this.SONORITY_GAIN_MULTIPLIER = 0.8;
-  this.SYMPATHETIC_GAIN_MULTIPLIER = 0.1;
-  
-  this.sympatheticUpGain = ctx.audioCtx.createGain();
-  this.sympatheticDownGain = ctx.audioCtx.createGain();
-  this.sonorityGain = ctx.audioCtx.createGain();
-  this.gain = ctx.audioCtx.createGain();
-    
-  this.sympatheticUp.connect(this.sympatheticUpGain);
-  this.sympatheticDown.connect(this.sympatheticDownGain);
-  this.sympatheticUpGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
-  this.sympatheticDownGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
-  this.gain.gain.value = 1;
-    
-  this.oscillator.frequency.value = pitchClass || this.ctx.basePitch;
-  this.oscillator.connect(this.gain);
-  this.oscillator.start();
-  
-  this.sonorityDelay = ctx.audioCtx.createDelay(6);
-  
-  this.sonority.connect(this.sonorityDelay);
-  this.sonorityDelay.connect(this.sonorityGain);
-  this.sonorityGain.connect(this.gain);
-  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
-  this.sonority.start();
-  
-  this.sympatheticUp.start();
-  this.sympatheticUpGain.connect(this.gain);
-  
-  this.sympatheticDown.start();
-  this.sympatheticDownGain.connect(this.gain);
+  this.pianoSound = new PianoSound(this.ctx.audioCtx);
+  this.basePitch = this.ctx.basePitch || options.basePitch || 220;
+  this.frequency = pitchClass || this.ctx.basePitch || 220;
   
   this.element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   
@@ -404,6 +527,14 @@ function Control(ctx, pitchClass, options) {
   this.setNote(pitchClass);
 };
 
+Control.prototype.connect = function(audioNode) {
+  this.pianoSound.connect(audioNode);
+};
+
+Control.prototype.disconnect = function() {
+  this.pianoSound.disconnect();
+};
+
 /**
 Take coordinate in the wheel and set the frequency from it.
 */
@@ -446,11 +577,12 @@ Control.prototype.pointToPitch = function(x, y) {
   // TODO: debug
   //discretizedOctave = norm;
   //console.log('norm: ' + norm);
-  //console.log('octave: ' + discretizedOctave);
+  console.log('octave: ' + discretizedOctave);
   var octaveMultiplier = Math.pow(2, discretizedOctave);
   
-  frequency = frequency * octaveMultiplier;
+  this.frequency = frequency * octaveMultiplier;
 
+  console.log('freq: ' + this.frequency);
   this.setNote(frequency);
 };
 
@@ -460,31 +592,32 @@ Calculate svg element angle and magnitude
 */
 Control.prototype.setNote = function(hz) {
   
-  console.log('setNote ' + hz);
+  console.log('setNote[' + hz + ']');
      
   // Set audio
-  this.oscillator.frequency.value = hz;
-  this.sonority.frequency.value = (hz / 2) + 1;
-  this.sympatheticUp.frequency.value = (hz * this.ctx.frequencyRatioForTemperament);
-  this.sympatheticDown.frequency.value = (hz * (1 / this.ctx.frequencyRatioForTemperament));
-  
+//  this.oscillator.frequency.value = hz;
+//  this.sonority.frequency.value = (hz / 2) + 1;
+//  this.sympatheticUp.frequency.value = (hz * this.ctx.frequencyRatioForTemperament);
+//  this.sympatheticDown.frequency.value = (hz * (1 / this.ctx.frequencyRatioForTemperament));
+//  
   // This gain function is arbitrary
   // Ideally the gain is 0.5 at 2 * 880 and 1.0 at 220
   //var gainScale = 1.75 - (3 * Math.log(hz) / Math.log(Math.pow(BASE_PITCH, this.NUMBER_OCTAVES + 1)));
-  var highestFreq = this.ctx.basePitch * Math.pow(2, this.NUMBER_OCTAVES);
+//  var highestFreq = this.ctx.basePitch * Math.pow(2, this.NUMBER_OCTAVES);
   //var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
-  var gainScale = (2*highestFreq - hz)/(2*highestFreq);
+//  var gainScale = (2*highestFreq - hz)/(2*highestFreq);
   
-  this.gain.gain.value = gainScale;
+//  this.gain.gain.value = gainScale;
   
-  this.sympatheticUpGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
-  this.sympatheticDownGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
-  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
+//  this.sympatheticUpGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
+//  this.sympatheticDownGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
+//  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
   
   // Distance from hz to base pitch in log scale, but linearly normalized by log(2) - log(1)
   // Linear scale, each linear unit as the LOG_NORMALIZER
   // Each unit of LOG_NORMALIZER represents an octave on the log scale
-  var val = ((Math.log(this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER);
+//  var val = ((Math.log(this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER);
+  var val = ((Math.log(hz) - Math.log(this.basePitch)) / LOG_NORMALIZER);
 
   // Normalize to single octave (0,R) -> (0,2) -> (0,2*pi)
   var angle = (val % 2) * 2 * Math.PI;
@@ -494,8 +627,21 @@ Control.prototype.setNote = function(hz) {
   //var magnitude = Math.floor(val % TEMPERAMENT) + 1;
   //console.log('val % TEMPERAMENT: ' + magnitude);
   var magnitude = Math.ceil(val);
-
+  
   this.display(angle, magnitude, hz);
+};
+
+Control.prototype.play = function(delay) {
+  this.pianoSound.play(this.frequency, delay);
+//  var now = this.ctx.audioCtx.currentTime;
+//  this.gain.gain.cancelScheduledValues(now);
+//    
+//  this.gain.gain.setValueAtTime(0.01, now + delay);
+//  this.gain.gain.linearRampToValueAtTime(0.65, now + delay + 0.04);
+//  this.gain.gain.linearRampToValueAtTime(0.5, now + delay + 0.09);
+//  this.gain.gain.exponentialRampToValueAtTime(0.4, now + delay + 0.2);
+//  this.gain.gain.linearRampToValueAtTime(0.3, now + delay + 0.6);
+//  this.gain.gain.setTargetAtTime(0, now + delay + 0.9, 0.7);
 };
 
 /**
@@ -506,8 +652,7 @@ Control.prototype.display = function(angle, magnitude, text) {
   var x = Math.cos(angle);// * (this.ctx.width / 8);
   var y = Math.sin(angle);// * (this.ctx.width / 8);
 
-  //console.log('draw x: ' + x);
-  //console.log('draw y: ' + y);
+  console.log('angle[' + angle + '] magnitude[' + magnitude + ']');
   
   var spinnerRadius = this.ctx.spinnerRadius;
   //var spinnerRadius = 1.0;
@@ -524,13 +669,12 @@ Control.prototype.display = function(angle, magnitude, text) {
   x *= mx;
   y *= my;
   
-  //console.log('draw fx: ' + (x + 50));
-  //console.log('draw fy: ' + (y + 50));
-  
   this.line.setAttribute('x2', (x));
   this.line.setAttribute('y2', (y));
   this.circle.setAttribute('cx', (x));
   this.circle.setAttribute('cy', (y));
+  
+  console.log('cx,cy [' + x + ',' + y + ']');
   
   var tx = 0.18 * normalizedX + x;
   var ty = 0.18 * normalizedY + y;
@@ -546,9 +690,11 @@ Control.prototype.display = function(angle, magnitude, text) {
   var transformString = ' translate(' + 100*(tx) + ',' + 100*(ty) + ')';
   this.text.setAttribute('transform', 'scale(0.009)' + transformString);
                          
-  this.text.innerHTML = text.toFixed(2) + 'Hz' + ' (' + this.gain.gain.value.toFixed(2) + ')';
+  //this.text.innerHTML = text.toFixed(2) + 'Hz' + ' (' + this.gain.gain.value.toFixed(2) + ')';
+  this.text.innerHTML = text.toFixed(2) + 'Hz';
 
-  var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
+  //var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
+  var guideVal = (((Math.log(this.guides[0].ratio * this.frequency) - Math.log(this.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
   
   var gx = Math.cos(guideVal);
   var gy = Math.sin(guideVal);
@@ -693,18 +839,23 @@ function PitchClock(options) {
   });
   
   this.play = function() {
-    var now = this.audioCtx.currentTime;
-    this.gain.gain.cancelScheduledValues(now);
+    //var now = this.audioCtx.currentTime;
+    //this.gain.gain.cancelScheduledValues(now);
     
-    var multiplier = 0.3;
+    //var multiplier = 0.3;
     
-    this.gain.gain.setValueAtTime(this.gain.gain.value, now);
-    this.gain.gain.linearRampToValueAtTime(multiplier * 0.65, now + 0.04);
-    this.gain.gain.linearRampToValueAtTime(multiplier * 0.5, now + 0.09);
-    this.gain.gain.exponentialRampToValueAtTime(multiplier * 0.4, now + 0.2);
-    this.gain.gain.linearRampToValueAtTime(multiplier * 0.3, now + 0.6);
-    this.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
-    //this.gain.gain.value = 0.4;
+    //this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+    //this.gain.gain.linearRampToValueAtTime(multiplier * 0.65, now + 0.04);
+    //this.gain.gain.linearRampToValueAtTime(multiplier * 0.5, now + 0.09);
+    //this.gain.gain.exponentialRampToValueAtTime(multiplier * 0.4, now + 0.2);
+    //this.gain.gain.linearRampToValueAtTime(multiplier * 0.3, now + 0.6);
+    //this.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
+    this.gain.gain.value = 0.3;
+    
+    this.controls.forEach(function(control, index) {
+      control.play(index * 0.4);
+    }.bind(this));
+    
     this.playing = true;
   };
   this.stop = function() {
@@ -725,7 +876,8 @@ function PitchClock(options) {
   this.addControl = function(hz) {
     var control = new Control(this, hz);
     this.controls.push(control);
-    control.gain.connect(this.gain);
+    //control.gain.connect(this.gain);
+    control.connect(this.gain);
         
     this.element.appendChild(control.element);
   };
