@@ -261,6 +261,7 @@ Control.prototype.pointToPitch = function(x, y) {
   
   var frequency = Math.pow(this.ctx.frequencyRatioForTemperament, keyInTemperament) * this.ctx.basePitch;
   
+  console.log('FREQ A [' + frequency + ']');
   // Assume that the max normal is 1.0 and represents the highest octave
   // Norm is (0,1] -> 4 octaves
   // We round to the nearest octave (0,4]
@@ -311,16 +312,18 @@ Control.prototype.setNote = function(hz) {
   // Linear scale, each linear unit as the LOG_NORMALIZER
   // Each unit of LOG_NORMALIZER represents an octave on the log scale
 //  var val = ((Math.log(this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER);
+  // 1 unit in log_normalizer space = 1 octave
   var val = ((Math.log(hz) - Math.log(this.basePitch)) / LOG_NORMALIZER);
-
+  
   // Normalize to single octave (0,R) -> (0,2) -> (0,2*pi)
   var angle = (val % 2) * 2 * Math.PI;
 
   // 12 logNormalizer steps = 1 octave
-  //console.log('val: ' + val);
+  console.log('val: ' + val);
   //var magnitude = Math.floor(val % TEMPERAMENT) + 1;
   //console.log('val % TEMPERAMENT: ' + magnitude);
-  var magnitude = Math.ceil(val);
+    
+  var magnitude = (val !== 0) ? Math.ceil(val) : 1;
   
   this.display(angle, magnitude, hz);
 };
