@@ -342,13 +342,9 @@ function PianoSound(audioCtx, options) {
   
   this.audioCtx = audioCtx;
   
-  // GAINS
-  
-  // Main
   this.gain = audioCtx.createGain();
   this.gain.gain.value = 0;
   
-  // Sympathetic
   this.mainVoice = new Voice(audioCtx);
   this.sympatheticUpVoice = new Voice(audioCtx);
   this.sympatheticDownVoice = new Voice(audioCtx);
@@ -360,56 +356,6 @@ function PianoSound(audioCtx, options) {
   this.sonorityVoice.connect(this.gain);
   
   this.frequencyRatioPerTemperament = Math.pow(2, 1/12);
-
-//  this.sympatheticUpGain = audioCtx.createGain();
-//  this.sympatheticUpGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
-//  this.sympatheticUpGain.gain.value = 0;
-//  this.sympatheticDownGain = audioCtx.createGain();
-//  this.sympatheticDownGain.gain.value = this.SYMPATHETIC_GAIN_MULTIPLIER;
-//  this.sympatheticDownGain.gain.value = 0;
-//  
-//  // Sonority
-//  this.sonorityGain = audioCtx.createGain();
-//  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
-//  this.sonorityDelay = ctx.audioCtx.createDelay(6);
-//  this.sonority.connect(this.sonorityDelay);
-//  this.sonorityDelay.connect(this.sonorityGain);
-//  
-//  // OSCILLATORS
-//  
-//  // Main
-//  this.oscillator = audioCtx.createOscillator();
-//  this.oscillator.frequency.value = 1;
-//  
-//  // Sympathetic
-//  this.sympatheticUp = audioCtx.createOscillator();
-//  this.sympatheticUp.frequency.value = 1;
-//  
-//  this.sympatheticDown = audioCtx.createOscillator();
-//  this.sympatheticDown.frequency.value = 1;
-//  
-//  // Sonority
-//  this.sonority = audioCtx.createOscillator();
-//  this.sonority.frequency.value = 1;
-//  
-//  // CONNECTIONS
-//  
-//  this.oscillator.connect(this.gain);
-//  
-//  this.sympatheticUp.connect(this.sympatheticUpGain);
-//  this.sympatheticUpGain.connect(this.gain);
-//  
-//  this.sympatheticDown.connect(this.sympatheticDownGain);  
-//  this.sympatheticDownGain.connect(this.gain);
-//  
-//  this.sonorityGain.connect(this.gain);
-//  
-//  // START
-//  
-//  this.oscillator.start();
-//  this.sympatheticUp.start();
-//  this.sympatheticDown.start();
-//  this.sonority.start();  
 }
 
 PianoSound.prototype.connect = function(audioNode) {
@@ -493,10 +439,6 @@ PianoSound.prototype.play = function(hz, delay) {
   this.sonorityVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.5, now + delay + 0.05);
   //this.sonorityVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.3, now + delay + 0.1);
   this.sonorityVoice.gain.gain.setTargetAtTime(0, now + delay + 0.6, 0.6);
-//  
-//  this.sympatheticUpVoice.gain.gain.value = 0;
-//  this.sympatheticDownVoice.gain.gain.value = 0;
-//  this.sonorityVoice.gain.gain.value = 0;
 };
 
 
@@ -514,6 +456,7 @@ function Control(ctx, pitchClass, options) {
   this.pianoSound = new PianoSound(this.ctx.audioCtx);
   this.basePitch = this.ctx.basePitch || options.basePitch || 220;
   this.frequency = pitchClass || this.ctx.basePitch || 220;
+  this.subdivisions = options.subdivisions || 3;
   
   this.element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   
@@ -548,14 +491,17 @@ function Control(ctx, pitchClass, options) {
     line: document.createElementNS('http://www.w3.org/2000/svg', 'line'),
     ratio: (3/2)
   });
-  this.guides[0].line.setAttribute('x1', '0');
-  this.guides[0].line.setAttribute('y1', '0');
-  this.guides[0].line.setAttribute('stroke', '#FF8888');
-  this.guides[0].line.setAttribute('stroke-width', '0.006');
+  
+  for (var i = 0; i < this.guides.length; i++) {
+    this.guides[i].line.setAttribute('x1', '0');
+    this.guides[i].line.setAttribute('y1', '0');
+    this.guides[i].line.setAttribute('stroke', '#FF8888');
+    this.guides[i].line.setAttribute('stroke-width', '0.006');
+    this.element.appendChild(this.guides[i].line);
+  }
   
   this.element.appendChild(this.line);
   this.element.appendChild(this.circle);
-  this.element.appendChild(this.guides[0].line);
   this.element.appendChild(this.text);
   
   this.setNote(pitchClass);
@@ -592,11 +538,11 @@ Control.prototype.pointToPitch = function(x, y) {
   console.log('Temperament01 [' + temperament01 + ']');
   
   // Discretize by rounding to closest subdivision
-  var subdivisionScale = Math.round((temperament01 * this.ctx.temperament) % this.ctx.temperament);
+  var subdivisionScale = Math.round((temperament01 * this.ctx.temperament * this.subdivisions) % (this.ctx.temperament * this.subdivisions));
   //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
   // Floored so 2 * base pitch doesn't wind up on lower octave
   //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
-  temperament01 = subdivisionScale / (this.ctx.temperament);
+  temperament01 = subdivisionScale / (this.ctx.temperament * this.subdivisions);
   
   // But temp will never equal 1, so we should never have 2 pi!
   temperament01 = temperament01 % 1;
@@ -780,14 +726,15 @@ Control.prototype.display = function(angle, magnitude, text) {
   //this.text.innerHTML = text.toFixed(2) + 'Hz' + ' (' + this.gain.gain.value.toFixed(2) + ')';
   this.text.innerHTML = text.toFixed(2) + 'Hz';
 
-  //var guideVal = (((Math.log(this.guides[0].ratio*this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
-  var guideVal = (((Math.log(this.guides[0].ratio * this.frequency) - Math.log(this.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
-  
-  var gx = Math.cos(guideVal);
-  var gy = Math.sin(guideVal);
+  this.guides.forEach(function(guide, index) {
+      var guideVal = (((Math.log(guide.ratio * this.frequency) - Math.log(this.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
 
-  this.guides[0].line.setAttribute('x2', (mx*gx));
-  this.guides[0].line.setAttribute('y2', (my*gy));
+      var gx = Math.cos(guideVal);
+      var gy = Math.sin(guideVal);
+
+      guide.line.setAttribute('x2', (mx*gx));
+      guide.line.setAttribute('y2', (my*gy));
+  }.bind(this));
 };
 
 
