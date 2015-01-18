@@ -420,49 +420,83 @@ PianoSound.prototype.disconnect = function() {
   this.gain.disconnect();
 };
 
-PianoSound.prototype.setNote = function(hz) {
+PianoSound.prototype.setNote = function(hz) {  
   this.mainVoice.oscillator.frequency.value = hz;
   this.sympatheticUpVoice.oscillator.frequency.value = (hz * this.frequencyRatioPerTemperament);
   this.sympatheticDownVoice.oscillator.frequency.value = (hz * (1 / this.frequencyRatioPerTemperament));
-  this.sonorityVoice.oscillator.frequency.value = (hz / 2) + 1;
-  
-  this.mainVoice.gain.gain.value = 0.9;
-  this.sympatheticUpVoice.gain.gain.value = 0.1;
-  this.sympatheticDownVoice.gain.gain.value = 0.1;
-  this.sonorityVoice.gain.gain.value = 0.2;
-  
-//  // Set audio
-//  this.oscillator.frequency.value = hz;
-//  this.sonority.frequency.value = (hz / 2) + 1;
-//  this.sympatheticUp.frequency.value = (hz * this.ctx.frequencyRatioForTemperament);
-//  this.sympatheticDown.frequency.value = (hz * (1 / this.ctx.frequencyRatioForTemperament));
-//  
+  this.sonorityVoice.oscillator.frequency.value = (hz / 2);
+};
+
+PianoSound.prototype.play = function(hz, delay) {
+  this.setNote(hz);
+
 //  // This gain function is arbitrary
 //  // Ideally the gain is 0.5 at 2 * 880 and 1.0 at 220
 //  //var gainScale = 1.75 - (3 * Math.log(hz) / Math.log(Math.pow(BASE_PITCH, this.NUMBER_OCTAVES + 1)));
 //  var highestFreq = this.ctx.basePitch * Math.pow(2, this.NUMBER_OCTAVES);
 //  //var gainScale = 2.40 - 2 * (1 * Math.log(hz) / Math.log(highestFreq));
 //  var gainScale = (2*highestFreq - hz)/(2*highestFreq);
-//  
-//  this.gain.gain.value = gainScale;
-//  
-//  this.sympatheticUpGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
-//  this.sympatheticDownGain.gain.value = gainScale * this.SYMPATHETIC_GAIN_MULTIPLIER;
-//  this.sonorityGain.gain.value = this.SONORITY_GAIN_MULTIPLIER;
-};
-
-PianoSound.prototype.play = function(hz, delay) {
-  this.setNote(hz);
   
-  var now = this.audioCtx.currentTime;
-  this.gain.gain.cancelScheduledValues(now);
+  var bandPass = 440;
+  var gainScale = (2*880 - hz)/(2*880);
+  console.log('gainScale [' + gainScale + ']');
     
+  this.gain.gain.value = 0.8;
+  //this.mainVoice.gain.gain.value = 0.8;
+//  this.sympatheticUpVoice.gain.gain.value = 0.1;
+//  this.sympatheticDownVoice.gain.gain.value = 0.1;
+//  this.sonorityVoice.gain.gain.value = 0.2;
+  
+//  this.gain.gain.linearRampToValueAtTime(gainScale * 0.65, now + delay + 0.04);
+//  this.gain.gain.linearRampToValueAtTime(gainScale * 0.5, now + delay + 0.09);
+//  this.gain.gain.exponentialRampToValueAtTime(gainScale * 0.4, now + delay + 0.2);
+//  this.gain.gain.linearRampToValueAtTime(gainScale * 0.3, now + delay + 0.6);
+//  this.gain.gain.setTargetAtTime(0, now + delay + 0.9, 0.7);
+    
+  var now = this.audioCtx.currentTime;
+  
+  this.gain.gain.cancelScheduledValues(now + delay);
   this.gain.gain.setValueAtTime(this.gain.gain.value, now + delay);
-  this.gain.gain.linearRampToValueAtTime(0.65, now + delay + 0.04);
-  this.gain.gain.linearRampToValueAtTime(0.5, now + delay + 0.09);
-  this.gain.gain.exponentialRampToValueAtTime(0.4, now + delay + 0.2);
-  this.gain.gain.linearRampToValueAtTime(0.3, now + delay + 0.6);
-  this.gain.gain.setTargetAtTime(0, now + delay + 0.9, 0.7);
+  this.gain.gain.exponentialRampToValueAtTime(1, now + delay);
+  this.gain.gain.setTargetAtTime(0, now + delay + 0.9, 2);
+  
+  this.mainVoice.gain.gain.cancelScheduledValues(now + delay/2);
+  // So we don't interpolate from 0 to delay
+  this.mainVoice.gain.gain.setValueAtTime(this.mainVoice.gain.gain.value, now + delay);
+  this.mainVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.8, now + delay + 0.02);
+  this.mainVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.75, now + delay + 0.04);
+  this.mainVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.55, now + delay + 0.7);
+  this.mainVoice.gain.gain.setTargetAtTime(0, now + delay + 0.8, 0.6);
+  
+//  this.mainVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.65, now + 0.04);
+//  this.mainVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.5, now + 0.09);
+//  this.mainVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.4, now + 0.2);
+//  this.mainVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.3, now + 0.6);
+//  this.mainVoice.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
+  
+//  
+//////  //this.sympatheticUpVoice.gain.gain.setValueAtTime(this.gain.gain.value, now + delay + 0.1);
+  this.sympatheticUpVoice.gain.gain.cancelScheduledValues(now + delay/2);
+  this.sympatheticUpVoice.gain.gain.setValueAtTime(this.sympatheticUpVoice.gain.gain.value / 2, now + delay);
+  this.sympatheticUpVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.07, now + delay + 0.01);
+  this.sympatheticUpVoice.gain.gain.setTargetAtTime(0, now + delay + 0.5, 0.2);
+//////  
+//  //this.sympatheticDownVoice.gain.gain.setValueAtTime(this.gain.gain.value, now + delay + 0.1);
+  this.sympatheticDownVoice.gain.gain.cancelScheduledValues(now + delay/2);
+  this.sympatheticDownVoice.gain.gain.setValueAtTime(this.sympatheticDownVoice.gain.gain.value / 2, now + delay);
+  this.sympatheticDownVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.07, now + delay + 0.01);
+  this.sympatheticDownVoice.gain.gain.setTargetAtTime(0, now + delay + 0.5, 0.2);
+//////
+  this.sonorityVoice.gain.gain.cancelScheduledValues(now + delay/2);
+  this.sonorityVoice.gain.gain.setValueAtTime(this.sonorityVoice.gain.gain.value / 2, now + delay);
+  this.sonorityVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.8, now + delay + 0.02);
+  this.sonorityVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.5, now + delay + 0.05);
+  //this.sonorityVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.3, now + delay + 0.1);
+  this.sonorityVoice.gain.gain.setTargetAtTime(0, now + delay + 0.6, 0.6);
+//  
+//  this.sympatheticUpVoice.gain.gain.value = 0;
+//  this.sympatheticDownVoice.gain.gain.value = 0;
+//  this.sonorityVoice.gain.gain.value = 0;
 };
 
 
@@ -906,7 +940,8 @@ function PitchClock(options) {
     this.gain.gain.value = 0.3;
     
     this.controls.forEach(function(control, index) {
-      control.play(index * 0.4);
+      //control.play(index * 0.22);
+      control.play(index * 0);
     }.bind(this));
     
     this.playing = true;
