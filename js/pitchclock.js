@@ -1,7 +1,7 @@
 LOG_NORMALIZER = Math.log(2) - Math.log(1);
 //TEMPERAMENT = 12;
 //INVERSE_TEMPERAMENT = 1.0 / TEMPERAMENT;
-//FREQUENCY_RATIO_FOR_TEMPERAMENT = Math.pow(2, 1.0/TEMPERAMENT);
+TEMPERAMENT_12_FREQ_STEP = Math.pow(2, 1.0/12);
 //BASE_PITCH = 220;
 
 
@@ -120,10 +120,10 @@ PianoSound.prototype.setNote = function(hz) {
   this.sympatheticDownVoice.oscillator.frequency.value = (hz * (1 / this.frequencyRatioPerTemperament));
   this.sonorityVoice.oscillator.frequency.value = (hz / 2) + 1;
   
-  this.mainVoice.gain.gain.value = 0.5;
-  this.sympatheticUpVoice.gain.gain.value = 0.5;
-  this.sympatheticDownVoice.gain.gain.value = 0.5;
-  this.sonorityVoice.gain.gain.value = 0.5;
+  this.mainVoice.gain.gain.value = 0.9;
+  this.sympatheticUpVoice.gain.gain.value = 0.1;
+  this.sympatheticDownVoice.gain.gain.value = 0.1;
+  this.sonorityVoice.gain.gain.value = 0.2;
   
 //  // Set audio
 //  this.oscillator.frequency.value = hz;
@@ -151,7 +151,7 @@ PianoSound.prototype.play = function(hz, delay) {
   var now = this.audioCtx.currentTime;
   this.gain.gain.cancelScheduledValues(now);
     
-  this.gain.gain.setValueAtTime(0.01, now + delay);
+  this.gain.gain.setValueAtTime(this.gain.gain.value, now + delay);
   this.gain.gain.linearRampToValueAtTime(0.65, now + delay + 0.04);
   this.gain.gain.linearRampToValueAtTime(0.5, now + delay + 0.09);
   this.gain.gain.exponentialRampToValueAtTime(0.4, now + delay + 0.2);
@@ -246,11 +246,23 @@ Control.prototype.pointToPitch = function(x, y) {
     angle = 2 * Math.PI - angle;
   }
   
-  // From (0, 2 * PI) to (0, 1)
-  var temperament01 = angle / (2 * Math.PI);
+  // From (0, 2 * PI) to (0, 1), but not including 1, we wind down
+  var temperament01 = (angle / (2 * Math.PI));
   
-  // Subdivisions
-  temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
+  console.log('Temperament01 [' + temperament01 + ']');
+  
+  // Discretize by rounding to closest subdivision
+  var subdivisionScale = Math.round((temperament01 * this.ctx.temperament) % this.ctx.temperament);
+  //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
+  // Floored so 2 * base pitch doesn't wind up on lower octave
+  //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
+  temperament01 = subdivisionScale / (this.ctx.temperament);
+  
+  // But temp will never equal 1, so we should never have 2 pi!
+  temperament01 = temperament01 % 1;
+  
+  console.log('Temperament to subdivision [' + (temperament01 * this.ctx.temperament) % this.ctx.temperament + ']');
+  console.log('Temperament01 [' + temperament01 + ']');
   
   // 100% = 12 steps = 1 whole octave
   
@@ -259,25 +271,35 @@ Control.prototype.pointToPitch = function(x, y) {
   // fraction per key
   var keyInTemperament = temperament01 * this.ctx.temperament;
   
+  console.log('Key In Temperament [' + keyInTemperament + ']');
+  
   var frequency = Math.pow(this.ctx.frequencyRatioForTemperament, keyInTemperament) * this.ctx.basePitch;
   
-  console.log('FREQ A [' + frequency + ']');
+  console.log('Pitch Class [' + frequency + ']');
   // Assume that the max normal is 1.0 and represents the highest octave
   // Norm is (0,1] -> 4 octaves
   // We round to the nearest octave (0,4]
   
   //var discretizedOctave = Math.ceil((norm / (1.0/4)));
   norm = Math.min(norm, 0.99);
+  
+  // Discretize (0,1) into subdivisions 
+  // Example: (0,0.25), (0,0.5), (0, 0.75)
+  console.log('Octave range [' + (norm * this.NUMBER_OCTAVES) + ']');
+  // Octave range 1.0001 case -> It should be 0.9, 2.0001 -> It should be 1.9
   var discretizedOctave = Math.floor((norm * this.NUMBER_OCTAVES));
+  //var discretizedOctave = Math.ceil((norm * this.NUMBER_OCTAVES));
+
   // TODO: debug
   //discretizedOctave = norm;
   //console.log('norm: ' + norm);
-  console.log('octave: ' + discretizedOctave);
+  console.log('discretizedOctave: ' + discretizedOctave);
   var octaveMultiplier = Math.pow(2, discretizedOctave);
   
-  this.frequency = frequency * octaveMultiplier;
+  var frequency = frequency * octaveMultiplier;
 
   console.log('freq: ' + this.frequency);
+  
   this.setNote(frequency);
 };
 
@@ -289,6 +311,8 @@ Control.prototype.setNote = function(hz) {
   
   console.log('setNote[' + hz + ']');
      
+  this.frequency = hz;
+  
   // Set audio
 //  this.oscillator.frequency.value = hz;
 //  this.sonority.frequency.value = (hz / 2) + 1;
@@ -313,17 +337,35 @@ Control.prototype.setNote = function(hz) {
   // Each unit of LOG_NORMALIZER represents an octave on the log scale
 //  var val = ((Math.log(this.oscillator.frequency.value) - Math.log(this.ctx.basePitch)) / LOG_NORMALIZER);
   // 1 unit in log_normalizer space = 1 octave
+  // 0 = base pitch, 1 = 1st octave, 2 = 2nd octave
+  // (0,1] = octave 0, (1,2] = octave 1, (2,3] = octave 3
   var val = ((Math.log(hz) - Math.log(this.basePitch)) / LOG_NORMALIZER);
   
   // Normalize to single octave (0,R) -> (0,2) -> (0,2*pi)
-  var angle = (val % 2) * 2 * Math.PI;
+  // Normalize to single octave (0,R) -> (0,1) -> (0,2*pi)
+  //var angle = (val % 2) * 2 * Math.PI;
+  console.log('val % 1: ' + (val % 1));
+
+  var angle = 0;
+  
+  if (approxEquals(val % 1, 1, 0.001)) {
+    angle = 0;
+  }
+  else {
+    angle = (val % 1) * 2 * Math.PI;
+  }
 
   // 12 logNormalizer steps = 1 octave
-  console.log('val: ' + val);
+  console.log('val (distance from base): ' + val);
+  console.log('angle: ' + angle);
   //var magnitude = Math.floor(val % TEMPERAMENT) + 1;
   //console.log('val % TEMPERAMENT: ' + magnitude);
-    
-  var magnitude = (val !== 0) ? Math.ceil(val) : 1;
+
+  
+  //var magnitude = (approxEquals(val % 1, 0, 0.001)) ? Math.ceil(val) + 1 : Math.ceil(val);
+  var magnitude = Math.ceil(val);
+  
+  console.log('mag: (to ceil)' + val);
   
   this.display(angle, magnitude, hz);
 };
@@ -340,6 +382,10 @@ Control.prototype.play = function(delay) {
 //  this.gain.gain.linearRampToValueAtTime(0.3, now + delay + 0.6);
 //  this.gain.gain.setTargetAtTime(0, now + delay + 0.9, 0.7);
 };
+    
+function approxEquals(e1, e2, criteria) {
+  return (Math.abs(e1 - e2) < (criteria / 2));
+}
 
 /**
 Controls the line and circle
@@ -349,7 +395,7 @@ Control.prototype.display = function(angle, magnitude, text) {
   var x = Math.cos(angle);// * (this.ctx.width / 8);
   var y = Math.sin(angle);// * (this.ctx.width / 8);
 
-  console.log('angle[' + angle + '] magnitude[' + magnitude + ']');
+  console.log('angle [' + angle + '] magnitude [' + magnitude + ']');
   
   var spinnerRadius = this.ctx.spinnerRadius;
   //var spinnerRadius = 1.0;
@@ -357,9 +403,13 @@ Control.prototype.display = function(angle, magnitude, text) {
   
   // 25% length at 1 magnitude
   // But 25% length is half of 100% of the width of svg
+  if (angle == 0 || approxEquals(angle, 2 * Math.PI, 0.001)) {
+    magnitude += 0.7;
+  }
+  
   var mx = (1.0 / this.NUMBER_OCTAVES) * magnitude * spinnerRadius;
   var my = (1.0 / this.NUMBER_OCTAVES) * magnitude * spinnerRadius;
-
+  
   var normalizedX = x;
   var normalizedY = y;
   
@@ -594,8 +644,10 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var tempX = (Math.cos(i / this.temperament * 2 * Math.PI));
     var tempY = (Math.sin(i / this.temperament * 2 * Math.PI));
     
-    temp.setAttribute('x2', .618 * tempX);
-    temp.setAttribute('y2', .618 * tempY);
+    //temp.setAttribute('x2', .618 * tempX);
+    //temp.setAttribute('y2', .618 * tempY);
+    temp.setAttribute('x2', Math.pow(TEMPERAMENT_12_FREQ_STEP, i) * 0.5 * tempX);
+    temp.setAttribute('y2', Math.pow(TEMPERAMENT_12_FREQ_STEP, i) * 0.5 * tempY);
     //temp.setAttribute('stroke', '#AAAADF');
     temp.setAttribute('stroke', 'rgb(120,173,165)');
     temp.setAttribute('stroke-width', '0.005');
