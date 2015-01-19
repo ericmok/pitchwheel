@@ -408,6 +408,7 @@ PianoSound.prototype.play = function(hz, delay) {
   
   this.mainVoice.gain.gain.cancelScheduledValues(now + delay/2);
   // So we don't interpolate from 0 to delay
+  //this.mainVoice.gain.gain.setValueAtTime(this.mainVoice.gain.gain.value, now + delay);
   this.mainVoice.gain.gain.setValueAtTime(this.mainVoice.gain.gain.value, now + delay);
   this.mainVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.8, now + delay + 0.02);
   this.mainVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.75, now + delay + 0.04);
@@ -793,8 +794,6 @@ function PitchClock(options) {
       var cx = control.circle.getAttribute('cx');
       var cy = control.circle.getAttribute('cy');
       
-      //var pcx = (cx.substr(0, cx.length - 1) - 50) / 100;
-      //var pcy = (cy.substr(0, cy.length - 1) - 50) / 100;
       var pcx = cx;
       var pcy = cy;
       var pcNorm = Math.sqrt(cx * cx + cy * cy);

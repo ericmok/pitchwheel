@@ -102,6 +102,7 @@ PianoSound.prototype.play = function(hz, delay) {
   
   this.mainVoice.gain.gain.cancelScheduledValues(now + delay/2);
   // So we don't interpolate from 0 to delay
+  //this.mainVoice.gain.gain.setValueAtTime(this.mainVoice.gain.gain.value, now + delay);
   this.mainVoice.gain.gain.setValueAtTime(this.mainVoice.gain.gain.value, now + delay);
   this.mainVoice.gain.gain.linearRampToValueAtTime(gainScale * 0.8, now + delay + 0.02);
   this.mainVoice.gain.gain.exponentialRampToValueAtTime(gainScale * 0.75, now + delay + 0.04);
