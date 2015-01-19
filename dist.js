@@ -307,7 +307,7 @@ console.log('index');
 LOG_NORMALIZER = Math.log(2) - Math.log(1);
 //TEMPERAMENT = 12;
 //INVERSE_TEMPERAMENT = 1.0 / TEMPERAMENT;
-TEMPERAMENT_12_FREQ_STEP = Math.pow(2, 1.0/12);
+//TEMPERAMENT_12_FREQ_STEP = Math.pow(2, 1.0/12);
 //BASE_PITCH = 220;
 
 
@@ -457,7 +457,7 @@ function Control(ctx, pitchClass, options) {
   this.pianoSound = new PianoSound(this.ctx.audioCtx);
   this.basePitch = this.ctx.basePitch || options.basePitch || 220;
   this.frequency = pitchClass || this.ctx.basePitch || 220;
-  this.subdivisions = options.subdivisions || 3;
+  this.subdivisions = options.subdivisions || 1;
   
   this.element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   
@@ -746,7 +746,7 @@ function PitchClock(options) {
   var _this = this;
   
   options = options || {};
-  this.temperament = options.temperament || 12;
+  //this.temperament = options.temperament || 12;
   this.basePitch = options.basePitch || 220;
   
   Object.defineProperty(this, 'frequencyRatioForTemperament', {
@@ -792,6 +792,12 @@ function PitchClock(options) {
     temperament(' ', 2),
     temperament('G#'),
     temperament(' ', 2) ];
+  
+  Object.defineProperty(this, 'temperament', {
+    get: function() {
+      return _this.temperaments.length;
+    }
+  });
   
   this.mousemove = function(ev) {
     
