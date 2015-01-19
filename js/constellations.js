@@ -19,13 +19,36 @@ scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11]);
 //chords.push(new Chord('C', [0,4,7], 'C Major'));
 //chords.push(new Chord('Csus', [0, 5,7], 'C Suspeneded'));
 //C, 
-//Csus, Csus2, 
-//C6, C6/9, 
-//Cm, Cm6, Cdim, 
-//C+, CM7, CM9, 
-//Cadd9, C7, C7b5, C7#5, 
-//C9, C7b9, C7#9, 
-//C13th, Cm7, Cm7b5, Cm7#5, Cm9, Cm7b9, Cdim7
+//Csus, [0, 5, 7] 
+//Csus2, [0, 2, 7]
+//C6, [0, 4, 7, 9] (optional 5th)
+//C6/9, [0, 4, 9, 14]
+//Cm
+//Cm6, [0, 3, 9] //optional 5th
+//Cdim, [0, 3, 6], C Diminished
+//C+, [0, 4, 8], C Augmented
+//CM7, [0, 4, 7, 11] (optional 5th)
+//C7, [0, 4, 7, 10], C Dominant 7th, (optional 5th)
+//C7b5, [0, 4, 6, 10], C Seven Flat Five
+//C7#5,  [0, 4, 8, 10], C Seven Sharp Five
+//Cm7, [0, 3, 7, 10], C Minor 7th (optional 5th)
+//Cm7b5, Cm7#5, 
+//CM9, [0, 4, 7, 11, 14], C Major 9th, (optional 5th)
+//Cadd9, [0, 4, 7, 14]
+//C9, [0, 4, 10, 14]
+//C7b9, [0, 4, 10, 13], C 7 Flat Nine
+//C7#9, [0, 4, 10, 15], C 7 Sharp Nine
+//C13th, [0, 10, 16, 21], C 13th Chord
+//Cm9, [0, 3, 10, 14], C Minor 9th
+//Cm7b9, [0, 3, 10, 13], C Minor 7th Flat Nine
+//Cdim7, [0, 3, 6, 9], C Diminished 7th, Optional Flat 5th
+
+//Csus4, [0, 5, 7]
+//Cdim7, [0, 3, 6, 9]
+//C7sus4, [0, 5, 6, 10]
+//C9sus4, [2, 5, 7, 10]
+//Cadd9 sus4, [0, 2, 5 ,7]
+// http://en.wikipedia.org/wiki/Ninth_chord
 
 
 new Constellation('Major Scale', [0, 2, 4, 5, 7, 9, 11], 'Major Scale');
@@ -55,7 +78,7 @@ new Constellation('Diminished', [0, 3, 6, 9]);
 new Constellation('Half Diminished', [0, 3, 6, 10]);
 new Constellation('Minor', [0, 3, 7, 10]);
 new Constellation('Minor Major', [0, 3, 7, 11]);
-new Constellation('Augmented', [0, 4, 8, 10]);
-new Constellation('Dominant', [0, 4, 7, 10]);
 new Constellation('Major', [0, 4, 7, 11]);
+new Constellation('Dominant', [0, 4, 7, 10]);
+new Constellation('Augmented', [0, 4, 8, 10]);
 new Constellation('Augmented Minor', [0, 4, 8, 11]);
