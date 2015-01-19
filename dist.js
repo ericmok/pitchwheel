@@ -736,6 +736,11 @@ Control.prototype.display = function(angle, magnitude, text) {
   }.bind(this));
 };
 
+function temperament(name, priority) {
+  var priority = priority || 1;
+  return { name: name, priority: priority };
+}
+
 
 function PitchClock(options) {
   var _this = this;
@@ -762,7 +767,31 @@ function PitchClock(options) {
   */
   this._SPINNER_RADIUS = 1;
   
-  this.temperamentNames = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+  this.temperaments = [
+    temperament('A'), 
+    temperament(' ', 2), 
+    temperament('A#'),
+    temperament(' ', 2),
+    temperament('B'), 
+    temperament(' ', 2),
+    temperament('C'), 
+    temperament(' ', 2),
+    temperament('C#'),
+    temperament(' ', 2),
+    temperament('D'), 
+    temperament(' ', 2),
+    temperament('D#'),
+    temperament(' ', 2),
+    temperament('E'), 
+    temperament(' ', 2),
+    temperament('F'), 
+    temperament(' ', 2),
+    temperament('F#'),
+    temperament(' ', 2),
+    temperament('G'), 
+    temperament(' ', 2),
+    temperament('G#'),
+    temperament(' ', 2) ];
   
   this.mousemove = function(ev) {
     
@@ -920,28 +949,34 @@ function PitchClock(options) {
 PitchClock.prototype.renderTemperamentGuides = function() {
   this.temperamentGuides = [];
   
-  for (var i = 0; i < this.temperament; i++) {
+  for (var i = 0; i < this.temperaments.length; i++) {
     var tempGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
     var temp = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     temp.setAttribute('x1', '0');
     temp.setAttribute('y1', '0');
-    var tempX = (Math.cos(i / this.temperament * 2 * Math.PI));
-    var tempY = (Math.sin(i / this.temperament * 2 * Math.PI));
+    var tempX = (Math.cos(i / this.temperaments.length * 2 * Math.PI));
+    var tempY = (Math.sin(i / this.temperaments.length * 2 * Math.PI));
     
     //temp.setAttribute('x2', .618 * tempX);
     //temp.setAttribute('y2', .618 * tempY);
-    temp.setAttribute('x2', Math.pow(TEMPERAMENT_12_FREQ_STEP, i) * 0.5 * tempX);
-    temp.setAttribute('y2', Math.pow(TEMPERAMENT_12_FREQ_STEP, i) * 0.5 * tempY);
+    var freqRatio = Math.pow(2, 1/(this.temperaments.length));
+    temp.setAttribute('x2', Math.pow(freqRatio, i) * 0.5 * tempX);
+    temp.setAttribute('y2', Math.pow(freqRatio, i) * 0.5 * tempY);
     //temp.setAttribute('stroke', '#AAAADF');
-    temp.setAttribute('stroke', 'rgb(120,173,165)');
+    if (this.temperaments[i].priority > 1) {
+      temp.setAttribute('stroke', 'rgb(200,200,200)');
+    }
+    else {
+      temp.setAttribute('stroke', 'rgb(120,173,165)');
+    }
     temp.setAttribute('stroke-width', '0.005');
     
     var lowerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     lowerLine.setAttribute('x1', '0');
     lowerLine.setAttribute('y1', '0');
-    var lowerLineX = (Math.cos(i / this.temperament * 2 * Math.PI));
-    var lowerLineY = (Math.sin(i / this.temperament * 2 * Math.PI));
+    var lowerLineX = (Math.cos(i / this.temperaments.length * 2 * Math.PI));
+    var lowerLineY = (Math.sin(i / this.temperaments.length * 2 * Math.PI));
     
     lowerLine.setAttribute('x2', .33 * lowerLineX);
     lowerLine.setAttribute('y2', .33 * lowerLineY);
@@ -962,7 +997,7 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     annotation.setAttribute('text-anchor', 'middle');
     annotation.setAttribute('alignment-baseline', 'central');
     annotation.setAttribute('font-size', '12');
-    annotation.innerHTML = this.temperamentNames[i];
+    annotation.innerHTML = this.temperaments[i].name;
 
     tempGroup.appendChild(temp);
     tempGroup.appendChild(lowerLine);
