@@ -302,3 +302,8 @@ pc.addControl(329.63);
 pc.addControl(2*391.5); // 392 is equal temperament, but this is perfect fifth
 
 console.log('index');
+
+//window.constellations = require('./constellations').constellations;
+//window.Chord = require('./constellations').Chord;
+window.scales = require('./constellations').scales;
+window.chords = require('./constellations').chords;

@@ -1,19 +1,87 @@
-function Constellation(name, semitones, longName) {
-}
+var $ = require('jquery');
+var Backbone = require('backbone');
+Backbone.$ = $;
+var Marionette = require('backbone.marionette');
 
+var Chord = Backbone.Model.extend({
+  defaults: {
+    name: '-',
+    semitones: [0],
+    longName: '-',
+    temperament: 12
+  },
+  initialize: function(name, semitones, longName, temperament) {
+    this.name = name;
+    this.semitones = semitones;
+    this.longName = name || longName;
+    this.temperament = temperament || 12;
+  }
+});
+
+
+var Constellations = Backbone.Collection.extend({
+  model: Chord,
+  url: '/'
+});
+
+Constellations = new Constellations();
+
+//function Constellation(name, semitones, longName) {
+//}
+//
 function ConstellationStore() {
   this.constellations = [];
 }
 
-ConstellationStore.prototype.add = function(name, semitones, longName) {
-  this.constellations.push({name: name, semitones: semitones, longName: longName});
+ConstellationStore.prototype.add = function(name, semitones, longName, temperament) {
+  this.constellations.push({name: name, 
+                            semitones: semitones, 
+                            longName: longName || name, 
+                            temperament: temperament || 12});
+  
+//  var chord = new Chord({
+//    name: name, 
+//    semitones: semitones, 
+//    longName: longName || name, 
+//    temperament: temperament || 12
+//  })
+  
+//  console.log(Constellations);
+  Constellations.add({
+    name: name,
+    semitones: semitones,
+    longName: longName || name,
+    temperament: temperament || 12
+  });
+  
+//  this.constellations.push(new Chord({
+//    name: name, 
+//    semitones: semitones, 
+//    longName: longName || name, 
+//    temperament: temperament || 12
+//  }));
 };
 
 var scales = new ConstellationStore();
 scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11]);
 
+scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11], 'Major Scale');
+scales.add('Minor Scale', [0, 2, 3, 5, 7, 8, 10], 'Minor Scale');
 
+scales.add('Ionian Mode', [0, 2, 4, 5, 7, 9, 11], 'Ionian Mode');
+scales.add('Dorian Mode', [0, 2, 3, 5, 7, 9, 10], 'Dorian Mode');
+scales.add('Phrygian Mode', [0, 1, 3, 5, 7, 8, 10], 'Phrygian Mode');
+scales.add('Lydian Mode', [0, 2, 4, 6, 7, 9, 11], 'Lydian Mode');
+scales.add('Mixolydian Mode', [0, 2, 4, 5, 7, 9, 10], 'Mixolydian Mode');
+scales.add('Aeolian Mode', [0, 2, 3, 5, 7, 8, 10], 'Aeolian Mode');
+scales.add('Locrian Mode', [0, 1, 3, 5, 6, 8, 10], 'Locrian Mode');
 
+scales.add('Whole Tone Scale', [0, 2, 4, 6, 8, 10], 'Whole Tone Scale');
+scales.add('Pentatonic Scale', [0, 2, 4, 7, 9], 'Pentatonic Scale');
+scales.add('6 Note Blues Scale', [0, 3, 5, 6, 7, 10], '6 Note Blues Scale');
+scales.add('Octotonic', [0, 2, 4, 5, 6, 8, 9, 11], '6 Note Blues Scale');
+
+var chords = new ConstellationStore();
               
 //var chords = [];
 //chords.push(new Chord('C', [0,4,7], 'C Major'));
@@ -50,35 +118,50 @@ scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11]);
 //Cadd9 sus4, [0, 2, 5 ,7]
 // http://en.wikipedia.org/wiki/Ninth_chord
 
-
-new Constellation('Major Scale', [0, 2, 4, 5, 7, 9, 11], 'Major Scale');
-new Constellation('Minor Scale', [0, 2, 3, 5, 7, 8, 10], 'Minor Scale');
-
-new Constellation('Ionian Mode', [0, 2, 4, 5, 7, 9, 11], 'Ionian Mode');
-new Constellation('Dorian Mode', [0, 2, 3, 5, 7, 9, 10], 'Dorian Mode');
-new Constellation('Phrygian Mode', [0, 1, 3, 5, 7, 8, 10], 'Phrygian Mode');
-new Constellation('Lydian Mode', [0, 2, 4, 6, 7, 9, 11], 'Lydian Mode');
-new Constellation('Mixolydian Mode', [0, 2, 4, 5, 7, 9, 10], 'Mixolydian Mode');
-new Constellation('Aeolian Mode', [0, 2, 3, 5, 7, 8, 10], 'Aeolian Mode');
-new Constellation('Locrian Mode', [0, 1, 3, 5, 6, 8, 10], 'Locrian Mode');
-
-new Constellation('Whole Tone Scale', [0, 2, 4, 6, 8, 10], 'Whole Tone Scale');
-new Constellation('Pentatonic Scale', [0, 2, 4, 7, 9], 'Pentatonic Scale');
-new Constellation('6 Note Blues Scale', [0, 3, 5, 6, 7, 10], '6 Note Blues Scale');
-new Constellation('Octotonic', [0, 2, 4, 5, 6, 8, 9, 11], '6 Note Blues Scale');
-
 // Triads
-new Constellation('Augmented Triad', [0, 4, 8]);
-new Constellation('Major Triad', [0, 4, 7]);
-new Constellation('Minor Triad', [0, 3, 7]);
-new Constellation('Diminished Triad', [0, 3, 6]);
+chords.add('maj', [0, 4, 7], 'Major');
+chords.add('m', [0, 3, 7], 'Minor');
+chords.add('+', [0, 4, 8], 'Augmented');
+chords.add('dim', [0, 3, 6], 'Diminished');
+
+chords.add('Sus', [0, 5, 7]);
+chords.add('Sus2', [0, 2, 7]);
+chords.add('6', [0, 4, 7, 9], 'Optional 5th');
+chords.add('6/9', [0, 4, 9, 14]);
+chords.add('m6', [0, 3, 9]); //optional 5th
+chords.add('M7', [0, 4, 7, 11], 'Major 7th (optional 5th)');
+chords.add('7', [0, 4, 7, 10], 'Dominant 7th, (optional 5th)');
+chords.add('C7b5', [0, 4, 6, 10], '7th Flat Five');
+chords.add('C7#5',  [0, 4, 8, 10], '7th Sharp Five / Augmented  7th');
+chords.add('min7', [0, 3, 7, 10], 'Minor 7th (optional 5th)');
+chords.add('Cm7b5', [0, 3, 6, 10], 'Minor 7th Flat Five');
+chords.add('Cm7#5', [0, 3, 8, 10], 'Minor 7th Sharp Five');
+chords.add('M9', [0, 4, 7, 11, 14], 'Major 9th, (optional 5th)');
+chords.add('add9', [0, 4, 7, 14]);
+chords.add('C9', [0, 4, 10, 14]);
+chords.add('7b9', [0, 4, 10, 13], '7 Flat Nine');
+chords.add('C7#9', [0, 4, 10, 15], '7 Sharp Nine');
+chords.add('C13th', [0, 10, 16, 21], '13th Chord');
+chords.add('m9', [0, 3, 10, 14], 'Minor 9th');
+chords.add('Cm7b9', [0, 3, 10, 13], 'Minor 7th Flat Nine');
+chords.add('Cdim7', [0, 3, 6, 9], 'Diminished 7th, Optional Flat 5th');
+
+chords.add('mM7', [0, 3, 7, 11], 'Minor Major 7th');
 
 // Seventh
-new Constellation('Diminished', [0, 3, 6, 9]);
-new Constellation('Half Diminished', [0, 3, 6, 10]);
-new Constellation('Minor', [0, 3, 7, 10]);
-new Constellation('Minor Major', [0, 3, 7, 11]);
-new Constellation('Major', [0, 4, 7, 11]);
-new Constellation('Dominant', [0, 4, 7, 10]);
-new Constellation('Augmented', [0, 4, 8, 10]);
-new Constellation('Augmented Minor', [0, 4, 8, 11]);
+//chords.add('dim7', [0, 3, 6, 9]); // Redundant
+chords.add('m7b5', [0, 3, 6, 10], 'Half Diminished 7th / Minor 7 Flat Five');
+//chords.add('Minor', [0, 3, 7, 10]);  // Redundant
+chords.add('ø Minor 7 Major', [0, 3, 7, 11]);
+chords.add('M7', [0, 4, 7, 11], 'Major 7th');
+//chords.add('Dominant', [0, 4, 7, 10]); // Redundant
+//chords.add('Augmented', [0, 4, 8, 10]); // Redundant
+chords.add('7 Augmented Minor', [0, 4, 8, 11], 'Augmented major 7th');
+
+
+module.exports = {
+  scales: scales,
+  chords: chords,
+  //constellations: constellations,
+  //Chord: Chord
+};

@@ -52,6 +52,10 @@
           </script>
         </polymer-element>
       
+      
+        <div id="sidepanel" class="sidepanel">
+          <constellations-list></constellations-list>
+        </div>
         <div class="app">
             <div class="inner-app">              
                 <div id="deviceready">
@@ -69,5 +73,44 @@
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script src="dist.js"></script>
+      
+        <polymer-element name="x-constellation" attributes="name longname semitones temperament">
+          <template>
+              <li><a href="#{{name}}" on-click="{{onClick}}">{{name}}</a></li>
+           </template>
+          <script>
+            Polymer({
+              onClick: function() {
+                console.log("CLICK");
+                pc.setFromConstellation({
+                  name: this.name,
+                  longName: this.longname,
+                  semitones: this.semitones,
+                  temperament: this.temperament
+                });
+              }
+            });
+          </script>
+        </polymer-element>
+      
+        <polymer-element name="constellations-list">
+           <template>
+             <ul>
+              <template repeat="{{c in collection}}">
+                <!--<li><a href="#{{c.name}}" on-click="{{onClick}}">{{c.name}}</a></li>-->
+                <x-constellation name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></x-constellation>
+              </template>
+              </ul>
+           </template>
+          <script>
+            Polymer({
+              collection: window.chords.constellations,
+              onClick: function(chord) {
+                console.log('click: ' + chord);
+                pc.setFromConstellation(chord);
+              }
+            });
+          </script>
+        </polymer-element>
     </body>
 </html>

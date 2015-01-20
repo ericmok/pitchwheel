@@ -138,6 +138,8 @@ PianoSound.prototype.play = function(hz, delay) {
 
 
 function Control(ctx, pitchClass, options) {
+  var _this = this;
+  
   options = options || {};
   
   this.ctx = ctx;
@@ -147,6 +149,21 @@ function Control(ctx, pitchClass, options) {
   this.NUMBER_OCTAVES = options.NUMBER_OCTAVES || 3;
   
   this.started = false;
+  
+  this._enabled = true;
+  
+  Object.defineProperty(this, 'enabled', {
+    get: function() { return _this._enabled; },
+    set: function(val) {
+      _this._enabled = val;
+      if (val == true) {
+        _this.element.style.opacity = '1';
+      }
+      else {
+        _this.element.style.opacity = '0';
+      }
+    }
+  });
   
   this.pianoSound = new PianoSound(this.ctx.audioCtx);
   this.basePitch = this.ctx.basePitch || options.basePitch || 220;
@@ -351,7 +368,13 @@ Control.prototype.setNote = function(hz) {
   this.display(angle, magnitude, hz);
 };
 
+/**
+Plays the piano sound associated with the note only
+if the control is enabled.
+*/
 Control.prototype.play = function(delay) {
+  if (!this.enabled) { return; }
+  
   this.pianoSound.play(this.frequency, delay);
 //  var now = this.ctx.audioCtx.currentTime;
 //  this.gain.gain.cancelScheduledValues(now);
@@ -492,6 +515,11 @@ function PitchClock(options) {
       return _this.temperaments.length;
     }
   });
+  Object.defineProperty(this, 'freqStepRatio', {
+    get: function() {
+      return Math.pow(2, 1/_this.temperaments.length);
+    }
+  });
   
   this.mousemove = function(ev) {
     
@@ -517,6 +545,9 @@ function PitchClock(options) {
     var closestControl = null;
     
     _this.controls.forEach(function(control, index) {
+      
+      if (!control.enabled) {return;}
+        
       console.log('pc circle: ' + control.circle.getAttribute('cx') + ',' + control.circle.getAttribute('cy'));
       console.log('mouse: ' + x + ',' + y);
 
@@ -641,7 +672,35 @@ function PitchClock(options) {
     control.connect(this.gain);
         
     this.element.appendChild(control.element);
+    
+    return control;
   };
+};
+
+/**
+Expects a constellation of type { name, semitones, temperament }
+*/
+PitchClock.prototype.setFromConstellation = function(constellation) {
+  this.controls.forEach(function(control, index) {
+    control.enabled = false;
+  }.bind(this));
+
+  var ratio = this.temperament / constellation.temperament;
+  
+  constellation.semitones.forEach(function(key, index) {
+    
+    var pitch = Math.pow(this.freqStepRatio, 2 * key) * this.basePitch;
+    
+    var control = this.controls[index];
+    if (control) {
+      control.setNote(pitch);
+      control.enabled = true;
+    }
+    else {
+      this.addControl(pitch);
+    }
+    
+  }.bind(this));
 };
 
 
