@@ -583,7 +583,7 @@ function PitchClock(options) {
     if (!this.initialized) {
       this.audioCtx = new window.AudioContext();
       this.gain = this.audioCtx.createGain();
-      this.gain.gain.value = 0;
+      this.gain.gain.value = 0.3;
       this.gain.connect(this.audioCtx.destination);
 
       this.element = document.getElementById(id);
@@ -641,7 +641,7 @@ function PitchClock(options) {
     //this.gain.gain.exponentialRampToValueAtTime(multiplier * 0.4, now + 0.2);
     //this.gain.gain.linearRampToValueAtTime(multiplier * 0.3, now + 0.6);
     //this.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
-    this.gain.gain.value = 0.3;
+    //this.gain.gain.value = 0.3;
     
     this.controls.forEach(function(control, index) {
       //control.play(index * 0.22);
@@ -675,6 +675,20 @@ function PitchClock(options) {
     
     return control;
   };
+};
+
+/**
+Play notes one after another, as opposed to simultaneously
+*/
+PitchClock.prototype.playInOrder = function() {
+  // TODO: Make this not change controls, since they are color coded
+  var sortedControl = this.controls.sort(function(a,b) {
+    return a.frequency > b.frequency;
+  });
+    
+  this.controls.forEach(function(control, index) {
+    control.play(index * 0.22);
+  }.bind(this));
 };
 
 /**
