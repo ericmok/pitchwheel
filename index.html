@@ -44,6 +44,7 @@
 -->
       <link rel="import" href="elements/x_app.html" />
       <link rel="import" href="elements/pitch_clock.html" />
+      <link rel="import" href="elements/constellation_list.html" />
       
         <title>Pitch Constellation</title>
     </head>
@@ -52,9 +53,11 @@
     </script>
     <body>      
       <x-app>
+        <div>
+          <h1 id="chordTitle"></h1>
+        </div>
         <div id="sidepanel" class="sidepanel">
-          <current-chord></current-chord>
-          <constellations-list collection="{{constellations}}"></constellations-list>
+          <constellations-list id="constellationsList"></constellations-list>
         </div>
         <div class="app">
             <div class="inner-app">

@@ -1,11 +1,25 @@
 <polymer-element name="x-app">
-  <template>
-    <content></content>
-  </template>
   <script>
     Polymer({
       ready: function() {
+        this.data = new Map();
+        this.pitchClockEl = document.querySelector('#pitchClock');
+        this.pitchClockEl.addEventListener('change', function(ev) {
+          console.log('x app event listener');
+        });
         
+        this.headerEl = document.querySelector('#chordTitle');
+        this.sidebar = document.querySelector('#sidebar');
+        this.constellationsList = document.getElementById('constellationsList');
+        
+        this.constellationsList.collection = window.constellations;
+      },
+      set: function(key, val) {
+        this.data.set(key, val);
+        this.fire('change');
+      },
+      get: function(key) {
+        return this.data.get(key);
       }
     });
   </script>

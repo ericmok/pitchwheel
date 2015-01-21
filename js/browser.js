@@ -7,7 +7,7 @@ var PitchClock = require('./pitchclock').PitchClock;
 var pitchClock = null;
 
 window.onload = function() {
-
+  
 }
 
 window.$ = $;

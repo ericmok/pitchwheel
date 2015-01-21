@@ -2,10 +2,10 @@
 
 <polymer-element name="constellations-list" attributes="collection">
    <template>
-     <h2>{{currentConstellation}}</h2>
      <ul>
       <template repeat="{{c,index in collection}}">
         <!--<li><a href="#{{c.name}}" on-click="{{onClick}}">{{c.name}}</a></li>-->
+        ITEM
         <constellation-item on-select="{{select}}" index="{{index}}" name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></constellation-item>
       </template>
       </ul>
@@ -13,6 +13,10 @@
   <script>
     Polymer({
       //collection: window.chords.constellations,
+      collection: [],
+      publish: {
+        collection: []
+      },
       ready: function() {
         this.collection = [];
       },
