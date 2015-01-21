@@ -51,14 +51,14 @@
                     </div>
                     <div id="pitchDisplay"></div>                           
                     <div>
-                      <paper-fab icon="av:volume-down" onClick="pc.playInOrder()"></paper-fab>
-                      <paper-fab icon="av:volume-up" onClick="pc.toggle()"></paper-fab>
+                      <paper-fab icon="av:volume-down" onClick="pitchClock.playInOrder()"></paper-fab>
+                      <paper-fab icon="av:volume-up" onClick="pitchClock.toggle()"></paper-fab>
                     </div>
                 </div>
             </div>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
-        <script src="browser/lib.js"></script>
+        <script src="dist/browser.js"></script>
       
         <script>
           var globals = {};
@@ -164,7 +164,7 @@
                 console.log("CLICK");
                 window.currentConstellation = this.longname;
                 
-                pc.setFromConstellation({
+                pitchClock.setFromConstellation({
                   name: this.name,
                   longName: this.longname,
                   semitones: this.semitones,

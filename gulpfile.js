@@ -1,16 +1,16 @@
 var gulp = require('gulp');
 var watch = require('gulp-watch');
+var clean = require('gulp-clean');
 var rename = require('gulp-rename');
 var browserify = require('gulp-browserify');
 
 gulp.task('default', function() {
   
-  gulp.src('js/index.js').
+  //gulp.src('./dist').pipe(clean());
+  
+  gulp.src('js/**/browser.js').
     pipe(browserify({insertGlobals: true})).
-    pipe(rename({
-      basename: 'lib'
-    })).
-    pipe(gulp.dest('./browser/'));
+    pipe(gulp.dest('./dist/'));
   
 });
 
