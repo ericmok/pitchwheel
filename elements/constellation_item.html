@@ -4,8 +4,8 @@
         .chord-link
         {
           list-style: none;
-          font-size: 12px;
-          padding: 4px;
+          font-size: 13px;
+          padding: 3px;
           cursor: pointer;
           border-radius: 3px;
           transition: all 0.2s ease;
@@ -44,16 +44,18 @@
         console.log("CLICK");
         window.currentConstellation = this.longname;
 
-        pitchClock.setFromConstellation({
-          name: this.name,
-          longName: this.longname,
-          semitones: this.semitones,
-          temperament: this.temperament
-        });
-
-        this.$.global.set('currentConstellation', this.index);
-        console.log("GLOBAL From Click: " + this.$.global.get('currentConstellation'));
-        this.selected = true;
+//        pitchClock.setFromConstellation({
+//          name: this.name,
+//          longName: this.longname,
+//          semitones: this.semitones,
+//          temperament: this.temperament
+//        });
+//
+//        this.$.global.set('currentConstellation', this.index);
+//        console.log("GLOBAL From Click: " + this.$.global.get('currentConstellation'));
+//        this.selected = true;
+        var index = this.index;
+        this.fire('select', {index: index});
       }
     });
   </script>

@@ -2,6 +2,7 @@
   <script>
     Polymer({
       ready: function() {
+        var _this = this;
         this.data = new Map();
         this.pitchClockEl = document.querySelector('#pitchClock');
         this.pitchClockEl.addEventListener('change', function(ev) {
@@ -12,7 +13,17 @@
         this.sidebar = document.querySelector('#sidebar');
         this.constellationsList = document.getElementById('constellationsList');
         
-        this.constellationsList.collection = window.constellations;
+        this.constellationsList.addEventListener('select', function(ev) {
+          console.log('x app select');
+          
+          _this.pitchClockEl.setFromConstellation({
+            name: ev.detail.name,
+            longName: ev.detail.longname,
+            semitones: ev.detail.semitones,
+            temperament: ev.detail.temperament
+          });
+        });
+        //this.constellationsList.collection = window.constellations;
       },
       set: function(key, val) {
         this.data.set(key, val);

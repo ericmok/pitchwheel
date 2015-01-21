@@ -5,27 +5,25 @@
      <ul>
       <template repeat="{{c,index in collection}}">
         <!--<li><a href="#{{c.name}}" on-click="{{onClick}}">{{c.name}}</a></li>-->
-        ITEM
         <constellation-item on-select="{{select}}" index="{{index}}" name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></constellation-item>
       </template>
       </ul>
    </template>
   <script>
     Polymer({
-      //collection: window.chords.constellations,
-      collection: [],
-      publish: {
-        collection: []
-      },
+      collection: window.chords.constellations,
       ready: function() {
-        this.collection = [];
       },
       select: function(ev) {
         console.log('constellation list select');
         console.log('constellation list: ' + ev.target);
-
+        
         var index = ev.detail.index;
         this.currentConstellation = 'A' + this.collection[index].name + " (" + this.collection[index].longName + ")";
+
+        var constellation = this.collection[index];
+        
+        this.fire('select', {name: constellation.name, semitones: constellation.semitones, temperament: constellation.temperament, longName: constellation.longName});
       }
     });
   </script>
