@@ -1,0 +1,22 @@
+
+  <polymer-element name="current-chord">
+    <template>
+      <meta-global id="global" on-current-changed="{{onCurrentChanged}}"></meta-global>
+      <h1 id="header">A{{currentConstellation}}</h1>
+    </template>
+    <script>
+      Polymer({
+        currentConstellation: window.chords.constellations[0].name,
+        ready: function() {
+          this.$.global.addEventListener('current-changed', function(ev) {
+            console.log('global change received');
+            document.getElementById('header').innerHTML = this.$.global.get('currentConstellation');
+          });
+        },
+        onCurrentChanged: function() {
+          console.log('on global change');
+          document.getElementById('header').innerHTML = this.$.global.get('currentConstellation');
+        }
+      });
+    </script>          
+  </polymer-element> 

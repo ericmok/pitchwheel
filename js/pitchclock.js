@@ -578,7 +578,7 @@ function PitchClock(options) {
   /**
   Initialize Audio Contexts
   */
-  this.initialize = function(id) {
+  this.initialize = function(el) {
     
     if (!this.initialized) {
       this.audioCtx = new window.AudioContext();
@@ -586,7 +586,7 @@ function PitchClock(options) {
       this.gain.gain.value = 0.3;
       this.gain.connect(this.audioCtx.destination);
 
-      this.element = document.getElementById(id);
+      this.element = el; //document.getElementById(id);
       this.element.setAttribute('viewBox', '-1 -1 2 2');
       this.element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       //this.element.setAttribute('text-rendering', 'geometricPrecision');

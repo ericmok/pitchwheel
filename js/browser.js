@@ -4,12 +4,11 @@ Backbone.$ = $;
 var Marionette = require('backbone.marionette');
 var PitchClock = require('./pitchclock').PitchClock;
 
-var pitchClock = new PitchClock();
-pitchClock.initialize('spinner');
-pitchClock.addControl(2*261.63);
-pitchClock.addControl(2*329.63);
-pitchClock.addControl(2*391.5); // 392 is equal temperament, but this is perfect fifth
+var pitchClock = null;
 
+window.onload = function() {
+
+}
 
 window.$ = $;
 window.Backbone = Backbone;

@@ -1,0 +1,28 @@
+<link rel="import" href="constellation_item.html" />
+
+<polymer-element name="constellations-list" attributes="collection">
+   <template>
+     <h2>{{currentConstellation}}</h2>
+     <ul>
+      <template repeat="{{c,index in collection}}">
+        <!--<li><a href="#{{c.name}}" on-click="{{onClick}}">{{c.name}}</a></li>-->
+        <constellation-item on-select="{{select}}" index="{{index}}" name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></constellation-item>
+      </template>
+      </ul>
+   </template>
+  <script>
+    Polymer({
+      //collection: window.chords.constellations,
+      ready: function() {
+        this.collection = [];
+      },
+      select: function(ev) {
+        console.log('constellation list select');
+        console.log('constellation list: ' + ev.target);
+
+        var index = ev.detail.index;
+        this.currentConstellation = 'A' + this.collection[index].name + " (" + this.collection[index].longName + ")";
+      }
+    });
+  </script>
+</polymer-element>

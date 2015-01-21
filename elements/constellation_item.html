@@ -1,0 +1,60 @@
+<polymer-element name="constellation-item" attributes="index name longname semitones temperament">
+  <template>
+      <style>
+        .chord-link
+        {
+          list-style: none;
+          font-size: 12px;
+          padding: 4px;
+          cursor: pointer;
+          border-radius: 3px;
+          transition: all 0.2s ease;
+        }
+        .chord-link:hover
+        {
+          font-size: 24px;
+        }
+        .selected
+        {
+          background: #FFAAAA;
+        }
+      </style>
+      <core-meta id="coreMeta" type="currentChord">
+        <property name="asdf" value="blue"></property>
+      </core-meta>
+      <meta-global id="global"></meta-global>
+      <li id="item" class="chord-link" on-click="{{onClick}}">
+        A{{name}}
+      </li>
+   </template>
+  <script>
+    Polymer({
+      selected: false,
+      selectedChanged: function(oldVal, newVal) {
+        console.log('selected changed ' + oldVal + '->' + newVal);
+        this.selected = newVal;
+        if (newVal === true) {
+          this.$.item.classList.add('selected');
+        }
+        else {
+          this.$.item.classList.remove('selected');
+        }
+      },
+      onClick: function() {                
+        console.log("CLICK");
+        window.currentConstellation = this.longname;
+
+        pitchClock.setFromConstellation({
+          name: this.name,
+          longName: this.longname,
+          semitones: this.semitones,
+          temperament: this.temperament
+        });
+
+        this.$.global.set('currentConstellation', this.index);
+        console.log("GLOBAL From Click: " + this.$.global.get('currentConstellation'));
+        this.selected = true;
+      }
+    });
+  </script>
+</polymer-element>

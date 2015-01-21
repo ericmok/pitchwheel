@@ -26,6 +26,8 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
       
+        <script src="dist/browser.js"></script>
+      
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
         <link rel="import" href="bower_components/polymer/polymer.html" />
       
@@ -35,175 +37,35 @@
 
         <link rel="import" href="bower_components/paper-fab/paper-fab.html" />
       
+<!--
+        <link rel="import" href="elements/app_global.html" />
+        <link rel="import" href="elements/constellation_app.html" />
+        <link rel="import" href="elements/constellation_list.html" />
+-->
+      <link rel="import" href="elements/x_app.html" />
+      <link rel="import" href="elements/pitch_clock.html" />
+      
         <title>Pitch Constellation</title>
     </head>
+    <script>
+      var constellations = window.chords.constellations;
+    </script>
     <body>      
+      <x-app>
         <div id="sidepanel" class="sidepanel">
           <current-chord></current-chord>
-          <constellations-list></constellations-list>
+          <constellations-list collection="{{constellations}}"></constellations-list>
         </div>
         <div class="app">
-            <div class="inner-app">              
+            <div class="inner-app">
                 <div id="deviceready">
                     <div style="width: 250px; height: 250px; margin: 50px; cursor: pointer;">
-                      <svg height="100%" width="100%" viewbox="-1 -1 2 2" style="overflow: visible;" id="spinner">
-                      </svg>
-                    </div>
-                    <div id="pitchDisplay"></div>                           
-                    <div>
-                      <paper-fab icon="av:volume-down" onClick="pitchClock.playInOrder()"></paper-fab>
-                      <paper-fab icon="av:volume-up" onClick="pitchClock.toggle()"></paper-fab>
+                        <pitch-clock id="pitchClock"></pitch-clock>
                     </div>
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script src="dist/browser.js"></script>
-      
-        <script>
-          var globals = {};
-        </script>
-
-        <polymer-element name="current-chord">
-          <template>
-            <meta-global id="global" on-current-changed="{{onCurrentChanged}}"></meta-global>
-            <h1 id="header">A{{currentConstellation}}</h1>
-          </template>
-          <script>
-            Polymer({
-              currentConstellation: window.chords.constellations[0].name,
-              ready: function() {
-                this.$.global.addEventListener('current-changed', function(ev) {
-                  console.log('global change received');
-                  document.getElementById('header').innerHTML = this.$.global.get('currentConstellation');
-                });
-              },
-              onCurrentChanged: function() {
-                console.log('on global change');
-                document.getElementById('header').innerHTML = this.$.global.get('currentConstellation');
-              }
-            });
-          </script>          
-        </polymer-element>
-      
-        <polymer-element name="meta-global" attributes="handler">
-          <template>
-          </template>
-          <script>
-            (function() {
-              var map = new Map();
-              
-              Polymer({
-                ready: function() {
-                  this.map = map;
-                  this.handler = function() {};
-                },
-                get: function(val) {
-                  return this.map.get(val);
-                },
-                set: function(key, val) {
-                  console.log('set!');
-                  var ret = this.map.set(key, val);
-                  this.fire('current-changed', {});
-                  this.fire('asdf');
-                  this.handler();
-                  return ret;
-                },
-                apply: function() {
-                  console.log('apply');
-                  this.fire('current-changed');
-                }
-              });
-            })();
-          </script>
-        </polymer-element>
-      
-        <polymer-element name="x-constellation" attributes="index name longname semitones temperament">
-          <template>
-              <style>
-                .chord-link
-                {
-                  list-style: none;
-                  font-size: 12px;
-                  padding: 4px;
-                  cursor: pointer;
-                  border-radius: 3px;
-                  transition: all 0.2s ease;
-                }
-                .chord-link:hover
-                {
-                  font-size: 24px;
-                }
-                .selected
-                {
-                  background: #FFAAAA;
-                }
-              </style>
-              <core-meta id="coreMeta" type="currentChord">
-                <property name="asdf" value="blue"></property>
-              </core-meta>
-              <meta-global id="global"></meta-global>
-              <li id="item" class="chord-link" on-click="{{onClick}}">
-                A{{name}}
-              </li>
-           </template>
-          <script>
-            Polymer({
-              selected: false,
-              selectedChanged: function(oldVal, newVal) {
-                console.log('selected changed ' + oldVal + '->' + newVal);
-                this.selected = newVal;
-                if (newVal === true) {
-                  this.$.item.classList.add('selected');
-                }
-                else {
-                  this.$.item.classList.remove('selected');
-                }
-              },
-              onClick: function() {                
-                console.log("CLICK");
-                window.currentConstellation = this.longname;
-                
-                pitchClock.setFromConstellation({
-                  name: this.name,
-                  longName: this.longname,
-                  semitones: this.semitones,
-                  temperament: this.temperament
-                });
-                
-                this.$.global.set('currentConstellation', this.index);
-                console.log("GLOBAL From Click: " + this.$.global.get('currentConstellation'));
-                this.selected = true;
-              }
-            });
-          </script>
-        </polymer-element>
-      
-        <polymer-element name="constellations-list">
-           <template>
-             <h2>{{currentConstellation}}</h2>
-             <ul>
-              <template repeat="{{c,index in collection}}">
-                <!--<li><a href="#{{c.name}}" on-click="{{onClick}}">{{c.name}}</a></li>-->
-                <x-constellation on-select="{{select}}" index="{{index}}" name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></x-constellation>
-              </template>
-              </ul>
-           </template>
-          <script>
-            Polymer({
-              collection: window.chords.constellations,
-              ready: function() {
-                
-              },
-              select: function(ev) {
-                console.log('constellation list select');
-                console.log('constellation list: ' + ev.target);
-
-                var index = ev.detail.index;
-                this.currentConstellation = 'A' + this.collection[index].name + " (" + this.collection[index].longName + ")";
-              }
-            });
-          </script>
-        </polymer-element>
+      </x-app>
+      <script type="text/javascript" src="cordova.js"></script>
     </body>
 </html>

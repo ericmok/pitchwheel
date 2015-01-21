@@ -1,0 +1,32 @@
+
+<polymer-element name="app-global" attributes="handler">
+  <template>
+  </template>
+  <script>
+    (function() {
+      var map = new Map();
+
+      Polymer({
+        ready: function() {
+          this.map = map;
+          this.handler = function() {};
+        },
+        get: function(val) {
+          return this.map.get(val);
+        },
+        set: function(key, val) {
+          console.log('set!');
+          var ret = this.map.set(key, val);
+          this.fire('current-changed', {});
+          this.fire('asdf');
+          this.handler();
+          return ret;
+        },
+        apply: function() {
+          console.log('apply');
+          this.fire('current-changed');
+        }
+      });
+    })();
+  </script>
+</polymer-element>
