@@ -129,35 +129,41 @@ chords.add('Sus2', [0, 2, 7]);
 chords.add('6', [0, 4, 7, 9], 'Optional 5th');
 chords.add('6/9', [0, 4, 9, 14]);
 chords.add('m6', [0, 3, 9]); //optional 5th
-chords.add('M7', [0, 4, 7, 11], 'Major 7th (optional 5th)');
-chords.add('7', [0, 4, 7, 10], 'Dominant 7th, (optional 5th)');
-chords.add('C7b5', [0, 4, 6, 10], '7th Flat Five');
-chords.add('C7#5',  [0, 4, 8, 10], '7th Sharp Five / Augmented  7th');
-chords.add('min7', [0, 3, 7, 10], 'Minor 7th (optional 5th)');
-chords.add('Cm7b5', [0, 3, 6, 10], 'Minor 7th Flat Five');
-chords.add('Cm7#5', [0, 3, 8, 10], 'Minor 7th Sharp Five');
-chords.add('M9', [0, 4, 7, 11, 14], 'Major 9th, (optional 5th)');
-chords.add('add9', [0, 4, 7, 14]);
-chords.add('C9', [0, 4, 10, 14]);
-chords.add('7b9', [0, 4, 10, 13], '7 Flat Nine');
-chords.add('C7#9', [0, 4, 10, 15], '7 Sharp Nine');
-chords.add('C13th', [0, 10, 16, 21], '13th Chord');
-chords.add('m9', [0, 3, 10, 14], 'Minor 9th');
-chords.add('Cm7b9', [0, 3, 10, 13], 'Minor 7th Flat Nine');
-chords.add('Cdim7', [0, 3, 6, 9], 'Diminished 7th, Optional Flat 5th');
 
+chords.add('M7', [0, 4, 7, 11], 'Major 7th (optional 5th)');
+chords.add('M7#5', [0, 4, 8, 11], 'Augmented major 7th');
+
+chords.add('dim7', [0, 3, 6, 9], 'Diminished 7th, Optional Flat 5th');
+
+chords.add('7', [0, 4, 7, 10], 'Dominant 7th, (optional 5th)');
+chords.add('7b5', [0, 4, 6, 10], '7th Flat Five');
+chords.add('7#5',  [0, 4, 8, 10], '7th Sharp Five / Augmented  7th');
+chords.add('7b9', [0, 4, 10, 13], '7 Flat Nine');
+chords.add('7#9', [0, 4, 10, 15], '7 Sharp Nine');
+
+chords.add('m7', [0, 3, 7, 10], 'Minor 7th (optional 5th)');
 chords.add('mM7', [0, 3, 7, 11], 'Minor Major 7th');
+chords.add('m7b5', [0, 3, 6, 10], 'Half Diminished 7th / Minor 7 Flat Five');
+chords.add('m7#5', [0, 3, 8, 10], 'Minor 7th Sharp Five');
+chords.add('m7b9', [0, 3, 10, 13], 'Minor 7th Flat Nine');
+
+chords.add('9', [0, 4, 10, 14]);
+chords.add('m9', [0, 3, 10, 14], 'Minor 9th');
+chords.add('M9', [0, 4, 7, 11, 14], 'Major 9th, (optional 5th)');
+
+chords.add('add9', [0, 4, 7, 14]);
+
+chords.add('13th', [0, 10, 16, 21], '13th Chord');
 
 // Seventh
 //chords.add('dim7', [0, 3, 6, 9]); // Redundant
-chords.add('m7b5', [0, 3, 6, 10], 'Half Diminished 7th / Minor 7 Flat Five');
+//chords.add('m7b5', [0, 3, 6, 10], 'Half Diminished 7th / Minor 7 Flat Five'); // Redundant
 //chords.add('Minor', [0, 3, 7, 10]);  // Redundant
-chords.add('ø Minor 7 Major', [0, 3, 7, 11]);
-chords.add('M7', [0, 4, 7, 11], 'Major 7th');
+//chords.add('ø Minor 7 Major', [0, 3, 7, 11]);
+//chords.add('M7', [0, 4, 7, 11], 'Major 7th'); // Redundant
 //chords.add('Dominant', [0, 4, 7, 10]); // Redundant
 //chords.add('Augmented', [0, 4, 8, 10]); // Redundant
-chords.add('7 Augmented Minor', [0, 4, 8, 11], 'Augmented major 7th');
-
+//chords.add('7 Augmented Minor', [0, 4, 8, 11], 'Augmented major 7th');
 
 module.exports = {
   scales: scales,
