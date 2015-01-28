@@ -51,6 +51,12 @@
         text-transform: none;
         color: #4285F4;
       }
+      paper-icon-button[icon="menu"]
+      {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
       .app
       {
           display: flex;
@@ -74,7 +80,7 @@
         <constellations-list id="constellationsList1" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
       </div>
       <div class="app">
-          <!-- <paper-icon-button icon="menu" ></paper-icon-button> -->
+          <paper-icon-button id="menu" icon="menu" on-click="{{showSidepanel}}" ></paper-icon-button> 
           <paper-button on-click="{{showSidepanel}}">
             <h1 id="chordTitle">{{currentkey}}{{currentConstellation.name}}</h1>
           </paper-button>
@@ -114,9 +120,11 @@
       },
       showSidepanel: function() {
         if (this.shown) {
+          this.$.menu.style.opacity = 1;
           this.$.sidepanel.classList.remove('sidepanel-shown');
           this.shown = false;
         } else {
+          this.$.menu.style.opacity = 0;
           this.$.sidepanel.classList.add('sidepanel-shown');
           this.shown = true;
         }
