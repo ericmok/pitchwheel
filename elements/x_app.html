@@ -13,6 +13,9 @@
         margin: 0;  
         padding: 0;
         border: none;
+
+        max-height: 100%;
+        overflow: hidden;
       }
       .sidepanel
       {
@@ -22,12 +25,20 @@
 
         background: #444;
         color: #FFF;
-        box-shadow: inset 0 0 0 1px #000;
+        box-shadow: inset 0 0 9px 0px rgba(20, 20, 20, 0.4);
 
         top: 0;
         left: -100%;
 
+        z-index: 99;
+    
+        opacity: 0.9;
+
         transition: all 0.7s ease;
+
+        max-height: 100%;
+        overflow-x: hidden;
+        overflow-y: scroll;
       }
       .sidepanel-shown
       {
@@ -48,6 +59,14 @@
           align-items: center;
           align-content: center;
       }
+      .buttons
+      {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+      }
     </style>
     <div class="wrapper">
       <div id="sidepanel" class="sidepanel">
@@ -61,6 +80,14 @@
           </paper-button>
           <div style="width: 250px; height: 250px; margin: 50px; cursor: pointer;">
             <pitch-clock on-change="{{pitchClockChange}}" id="pitchClock"></pitch-clock>
+          </div>
+          <div class="buttons">
+            <paper-button on-click="{{playInOrder}}">
+              <core-icon icon="av:volume-down"></core-icon>
+            </paper-button>
+            <paper-button on-click="{{playAll}}">
+              <core-icon icon="av:volume-up"></core-icon>
+            </paper-button>
           </div>
       </div>
     </div>
@@ -78,10 +105,12 @@
         this.currentConstellation = window.libraries[0].constellations[0];
 
         this.data = new Map();
-        this.pitchClockEl = document.querySelector('#pitchClock');
-        this.headerEl = document.querySelector('#chordTitle');
-        this.sidepanel = document.querySelector('#sidepanel');
-        this.constellationsList = document.getElementById('constellationsList');
+      },
+      playInOrder: function() {
+        this.$.pitchClock.playInOrder();
+      },
+      playAll: function() {
+        this.$.pitchClock.toggle();
       },
       showSidepanel: function() {
         if (this.shown) {
