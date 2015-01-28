@@ -1,3 +1,5 @@
+<link rel="import" href="../bower_components/paper-button/paper-button.html" />
+
 <polymer-element name="x-app">
   <template>
     <style>
@@ -33,6 +35,11 @@
       }
 /*      @media screen and (max-width: 700px) {
       }*/
+      paper-button
+      {
+        text-transform: none;
+        color: #4285F4;
+      }
       .app
       {
           display: flex;
@@ -48,10 +55,10 @@
         <constellations-list id="constellationsList1" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
       </div>
       <div class="app">
-          <paper-icon-button icon="menu" on-click="{{showSidepanel}}"></paper-icon-button>
-          <div>
+          <!-- <paper-icon-button icon="menu" ></paper-icon-button> -->
+          <paper-button on-click="{{showSidepanel}}">
             <h1 id="chordTitle">{{currentkey}}{{currentConstellation.name}}</h1>
-          </div>
+          </paper-button>
           <div style="width: 250px; height: 250px; margin: 50px; cursor: pointer;">
             <pitch-clock on-change="{{pitchClockChange}}" id="pitchClock"></pitch-clock>
           </div>
@@ -94,6 +101,10 @@
       },
       selectConstellation: function(ev) {
         console.log('select constellation');
+
+        if (window.innerWidth < 700) {
+          this.showSidepanel();
+        }
 
         // var constellation = {
         //   name: ev.detail.name,
