@@ -29,11 +29,13 @@ Constellations = new Constellations();
 //function Constellation(name, semitones, longName) {
 //}
 //
-function ConstellationStore() {
+
+function Library(name) {
+  this.name = name;
   this.constellations = [];
 }
 
-ConstellationStore.prototype.add = function(name, semitones, longName, temperament) {
+Library.prototype.add = function(name, semitones, longName, temperament) {
   this.constellations.push({name: name, 
                             semitones: semitones, 
                             longName: longName || name, 
@@ -62,8 +64,10 @@ ConstellationStore.prototype.add = function(name, semitones, longName, temperame
 //  }));
 };
 
-var scales = new ConstellationStore();
-scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11]);
+var libraries = [];
+
+var scales = new Library('Scales');
+//scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11]);
 
 scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11], 'Major Scale');
 scales.add('Minor Scale', [0, 2, 3, 5, 7, 8, 10], 'Minor Scale');
@@ -81,7 +85,7 @@ scales.add('Pentatonic Scale', [0, 2, 4, 7, 9], 'Pentatonic Scale');
 scales.add('6 Note Blues Scale', [0, 3, 5, 6, 7, 10], '6 Note Blues Scale');
 scales.add('Octotonic', [0, 2, 4, 5, 6, 8, 9, 11], '6 Note Blues Scale');
 
-var chords = new ConstellationStore();
+var chords = new Library('Chords');
               
 //var chords = [];
 //chords.push(new Chord('C', [0,4,7], 'C Major'));
@@ -165,9 +169,13 @@ chords.add('13th', [0, 10, 16, 21], '13th Chord');
 //chords.add('Augmented', [0, 4, 8, 10]); // Redundant
 //chords.add('7 Augmented Minor', [0, 4, 8, 11], 'Augmented major 7th');
 
+libraries.push(chords, scales);
+
 module.exports = {
   scales: scales,
   chords: chords,
+  libraries: libraries,
+  Constellations: Constellations
   //constellations: constellations,
   //Chord: Chord
 };

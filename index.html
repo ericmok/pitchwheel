@@ -26,8 +26,6 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
       
-        <script src="dist/browser.js"></script>
-      
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
         <link rel="import" href="bower_components/polymer/polymer.html" />
       
@@ -36,7 +34,8 @@
         <link rel="import" href="bower_components/core-iconset/core-iconset.html" />
 
         <link rel="import" href="bower_components/paper-fab/paper-fab.html" />
-      
+        <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
+
 <!--
         <link rel="import" href="elements/app_global.html" />
         <link rel="import" href="elements/constellation_app.html" />
@@ -53,21 +52,6 @@
     </script>
     <body>      
       <x-app>
-        <div>
-          <h1 id="chordTitle"></h1>
-        </div>
-        <div id="sidepanel" class="sidepanel">
-          <constellations-list id="constellationsList"></constellations-list>
-        </div>
-        <div class="app">
-            <div class="inner-app">
-                <div id="deviceready">
-                    <div style="width: 250px; height: 250px; margin: 50px; cursor: pointer;">
-                        <pitch-clock id="pitchClock"></pitch-clock>
-                    </div>
-                </div>
-            </div>
-        </div>
       </x-app>
       <script type="text/javascript" src="cordova.js"></script>
     </body>

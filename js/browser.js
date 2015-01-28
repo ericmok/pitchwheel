@@ -18,3 +18,4 @@ window.PitchClock = PitchClock;
 window.pitchClock = pitchClock;
 window.scales = require('./constellations').scales;
 window.chords = require('./constellations').chords;
+window.libraries = require('./constellations').libraries;

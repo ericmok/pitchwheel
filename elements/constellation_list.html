@@ -1,29 +1,39 @@
 <link rel="import" href="constellation_item.html" />
 
-<polymer-element name="constellations-list" attributes="collection">
+<polymer-element name="constellations-list" attributes="currentkey">
    <template>
+     <h4>{{library.name}}</h4>
      <ul>
-      <template repeat="{{c,index in collection}}">
+      <template repeat="{{c,index in library.constellations}}">
         <!--<li><a href="#{{c.name}}" on-click="{{onClick}}">{{c.name}}</a></li>-->
-        <constellation-item on-select="{{select}}" index="{{index}}" name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></constellation-item>
+<!--         <constellation-item on-select="{{select}}" index="{{index}}" name="{{c.name}}" longname="{{c.longName}}" semitones="{{c.semitones}}" temperament="{{c.temperament}}"></constellation-item> -->
+        <constellation-item on-select="{{select}}" currentkey="{{currentkey}}" constellation="{{c}}"></constellation-item>
       </template>
       </ul>
    </template>
   <script>
     Polymer({
-      collection: window.chords.constellations,
+      //collection: window.chords.constellations,
       ready: function() {
+        this.selectedIndex = 0;
+        //this.library = {name: '', constellations: []};
       },
       select: function(ev) {
         console.log('constellation list select');
         console.log('constellation list: ' + ev.target);
         
         var index = ev.detail.index;
-        this.currentConstellation = 'A' + this.collection[index].name + " (" + this.collection[index].longName + ")";
+        this.selectedIndex = index;
+        // this.currentConstellation = 'A' + this.collection[index].name + " (" + this.collection[index].longName + ")";
 
-        var constellation = this.collection[index];
+        // var constellation = this.collection[index];
         
-        this.fire('select', {name: constellation.name, semitones: constellation.semitones, temperament: constellation.temperament, longName: constellation.longName});
+        // this.fire('select', {name: constellation.name, semitones: constellation.semitones, temperament: constellation.temperament, longName: constellation.longName});
+        
+        //var constellation = this.collection[this.selectedIndex];
+        
+        //this.fire('select', ev.detail.constellation);
+        this.fire('select', {constellation: ev.detail.constellation});
       }
     });
   </script>

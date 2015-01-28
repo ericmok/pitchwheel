@@ -1,4 +1,5 @@
-<polymer-element name="constellation-item" attributes="index name longname semitones temperament">
+<polymer-element name="constellation-item" attributes="index currentkey constellation">
+<!-- <polymer-element name="constellation-item" attributes="index name longname semitones temperament"> -->
   <template>
       <style>
         .chord-link
@@ -24,7 +25,7 @@
       </core-meta>
       <meta-global id="global"></meta-global>
       <li id="item" class="chord-link" on-click="{{onClick}}">
-        A{{name}}
+        {{currentkey}}{{constellation.name}}
       </li>
    </template>
   <script>
@@ -42,7 +43,7 @@
       },
       onClick: function() {                
         console.log("CLICK");
-        window.currentConstellation = this.longname;
+        //window.currentConstellation = this.longname;
 
 //        pitchClock.setFromConstellation({
 //          name: this.name,
@@ -55,7 +56,7 @@
 //        console.log("GLOBAL From Click: " + this.$.global.get('currentConstellation'));
 //        this.selected = true;
         var index = this.index;
-        this.fire('select', {index: index});
+        this.fire('select', {index: index, constellation: this.constellation});
       }
     });
   </script>

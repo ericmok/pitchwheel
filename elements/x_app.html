@@ -1,29 +1,89 @@
 <polymer-element name="x-app">
+  <template>
+    <style>
+      :host {
+        margin: 0;
+        padding: 0;
+        border: none;
+      }
+      .wrapper
+      {
+        margin: 0;  
+        padding: 0;
+        border: none;
+      }
+      .sidepanel
+      {
+        position: absolute;
+        margin: 0;
+        padding: 10px;
+
+        background: #444;
+        color: #FFF;
+        box-shadow: inset 0 0 0 1px #000;
+
+        top: 0;
+        left: -100%;
+
+        transition: all 0.7s ease;
+      }
+      .sidepanel-shown
+      {
+        left: 0%;
+      }
+/*      @media screen and (max-width: 700px) {
+      }*/
+      .app
+      {
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+      }
+    </style>
+    <div class="wrapper">
+      <div id="sidepanel" class="sidepanel">
+        <constellations-list id="constellationsList0" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
+        <constellations-list id="constellationsList1" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
+      </div>
+      <div class="app">
+          <paper-icon-button icon="menu" on-click="{{showSidepanel}}"></paper-icon-button>
+          <div>
+            <h1 id="chordTitle">{{currentkey}}{{currentConstellation.name}}</h1>
+          </div>
+          <div style="width: 250px; height: 250px; margin: 50px; cursor: pointer;">
+            <pitch-clock on-change="{{pitchClockChange}}" id="pitchClock"></pitch-clock>
+          </div>
+      </div>
+    </div>
+  </template>
   <script>
     Polymer({
       ready: function() {
         var _this = this;
+
+        this.libraries = window.libraries;
+        this.$.constellationsList0.library = this.libraries[0];
+        this.$.constellationsList1.library = this.libraries[1];
+
+        this.currentkey = 'A';
+        this.currentConstellation = window.libraries[0].constellations[0];
+
         this.data = new Map();
         this.pitchClockEl = document.querySelector('#pitchClock');
-        this.pitchClockEl.addEventListener('change', function(ev) {
-          console.log('x app event listener');
-        });
-        
         this.headerEl = document.querySelector('#chordTitle');
-        this.sidebar = document.querySelector('#sidebar');
+        this.sidepanel = document.querySelector('#sidepanel');
         this.constellationsList = document.getElementById('constellationsList');
-        
-        this.constellationsList.addEventListener('select', function(ev) {
-          console.log('x app select');
-          
-          _this.pitchClockEl.setFromConstellation({
-            name: ev.detail.name,
-            longName: ev.detail.longname,
-            semitones: ev.detail.semitones,
-            temperament: ev.detail.temperament
-          });
-        });
-        //this.constellationsList.collection = window.constellations;
+      },
+      showSidepanel: function() {
+        if (this.shown) {
+          this.$.sidepanel.classList.remove('sidepanel-shown');
+          this.shown = false;
+        } else {
+          this.$.sidepanel.classList.add('sidepanel-shown');
+          this.shown = true;
+        }
       },
       set: function(key, val) {
         this.data.set(key, val);
@@ -31,6 +91,25 @@
       },
       get: function(key) {
         return this.data.get(key);
+      },
+      selectConstellation: function(ev) {
+        console.log('select constellation');
+
+        // var constellation = {
+        //   name: ev.detail.name,
+        //   longName: ev.detail.longname,
+        //   semitones: ev.detail.semitones,
+        //   temperament: ev.detail.temperament
+        // };
+        var constellation = ev.detail.constellation;
+
+        //this.pitchClockEl.setFromConstellation({
+        this.$.pitchClock.setFromConstellation(constellation);
+
+        this.currentConstellation = constellation;
+      },
+      pitchClockChange: function() {
+        console.log('pitch clock change');
       }
     });
   </script>
