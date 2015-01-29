@@ -685,7 +685,7 @@ PitchClock.prototype.playInOrder = function() {
 /**
 Expects a constellation of type { name, semitones, temperament }
 */
-PitchClock.prototype.setFromConstellation = function(constellation) {
+PitchClock.prototype.setFromConstellation = function(constellation, options) {
   this.controls.forEach(function(control, index) {
     control.enabled = false;
   }.bind(this));
@@ -693,7 +693,13 @@ PitchClock.prototype.setFromConstellation = function(constellation) {
   var ratio = this.temperament / constellation.temperament;
   
   constellation.semitones.forEach(function(key, index) {
-    
+
+    if (options && options.normalize) {
+      if (constellation.semitones[constellation.semitones.length - 1] <= this.temperament * 2) {
+        key += this.temperament;
+      }
+    }
+
     var pitch = Math.pow(this.freqStepRatio, ratio * key) * this.basePitch;
     
     var control = this.controls[index];
