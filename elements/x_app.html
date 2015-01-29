@@ -23,7 +23,9 @@
         margin: 0;
         padding: 10px;
 
-        padding-top: 20px;
+        min-width: 240px;
+
+        padding-top: 29px;
 
         /*background: #444;*/
         /*background: #2A1332;*/
@@ -118,6 +120,9 @@
 
         this.currentkey = 'A';
         this.currentConstellation = window.libraries[0].constellations[0];
+
+        console.log('currentConstellation ');
+        this.$.pitchClock.setFromConstellation(this.currentConstellation);
 
         this.data = new Map();
 
