@@ -168,7 +168,7 @@ function Control(ctx, pitchClass, options) {
   this.pianoSound = new PianoSound(this.ctx.audioCtx);
   this.basePitch = this.ctx.basePitch || options.basePitch || 220;
   this.frequency = pitchClass || this.ctx.basePitch || 220;
-  this.subdivisions = options.subdivisions || 1;
+  this.subdivisions = options.subdivisions || 2;
   
   this.element = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   
@@ -486,29 +486,17 @@ function PitchClock(options) {
   
   this.temperaments = [
     temperament('A'), 
-    temperament(' ', 2), 
     temperament('A#'),
-    temperament(' ', 2),
     temperament('B'), 
-    temperament(' ', 2),
     temperament('C'), 
-    temperament(' ', 2),
     temperament('C#'),
-    temperament(' ', 2),
     temperament('D'), 
-    temperament(' ', 2),
     temperament('D#'),
-    temperament(' ', 2),
     temperament('E'), 
-    temperament(' ', 2),
     temperament('F'), 
-    temperament(' ', 2),
     temperament('F#'),
-    temperament(' ', 2),
     temperament('G'), 
-    temperament(' ', 2),
-    temperament('G#'),
-    temperament(' ', 2) ];
+    temperament('G#')];
   
   Object.defineProperty(this, 'temperament', {
     get: function() {
