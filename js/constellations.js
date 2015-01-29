@@ -69,21 +69,21 @@ var libraries = [];
 var scales = new Library('Scales');
 //scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11]);
 
-scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11], 'Major Scale');
-scales.add('Minor Scale', [0, 2, 3, 5, 7, 8, 10], 'Minor Scale');
+scales.add('Major Scale', [0, 2, 4, 5, 7, 9, 11, 12], 'Major Scale');
+scales.add('Minor Scale', [0, 2, 3, 5, 7, 8, 10, 12], 'Minor Scale');
 
-scales.add('Ionian Mode', [0, 2, 4, 5, 7, 9, 11], 'Ionian Mode');
-scales.add('Dorian Mode', [0, 2, 3, 5, 7, 9, 10], 'Dorian Mode');
-scales.add('Phrygian Mode', [0, 1, 3, 5, 7, 8, 10], 'Phrygian Mode');
-scales.add('Lydian Mode', [0, 2, 4, 6, 7, 9, 11], 'Lydian Mode');
-scales.add('Mixolydian Mode', [0, 2, 4, 5, 7, 9, 10], 'Mixolydian Mode');
-scales.add('Aeolian Mode', [0, 2, 3, 5, 7, 8, 10], 'Aeolian Mode');
-scales.add('Locrian Mode', [0, 1, 3, 5, 6, 8, 10], 'Locrian Mode');
+scales.add('Ionian Mode', [0, 2, 4, 5, 7, 9, 11, 12], 'Ionian Mode');
+scales.add('Dorian Mode', [0, 2, 3, 5, 7, 9, 10, 12], 'Dorian Mode');
+scales.add('Phrygian Mode', [0, 1, 3, 5, 7, 8, 10, 12], 'Phrygian Mode');
+scales.add('Lydian Mode', [0, 2, 4, 6, 7, 9, 11, 12], 'Lydian Mode');
+scales.add('Mixolydian Mode', [0, 2, 4, 5, 7, 9, 10, 12], 'Mixolydian Mode');
+scales.add('Aeolian Mode', [0, 2, 3, 5, 7, 8, 10, 12], 'Aeolian Mode');
+scales.add('Locrian Mode', [0, 1, 3, 5, 6, 8, 10, 12], 'Locrian Mode');
 
-scales.add('Whole Tone Scale', [0, 2, 4, 6, 8, 10], 'Whole Tone Scale');
-scales.add('Pentatonic Scale', [0, 2, 4, 7, 9], 'Pentatonic Scale');
-scales.add('6 Note Blues Scale', [0, 3, 5, 6, 7, 10], '6 Note Blues Scale');
-scales.add('Octotonic', [0, 2, 4, 5, 6, 8, 9, 11], '6 Note Blues Scale');
+scales.add('Whole Tone Scale', [0, 2, 4, 6, 8, 10, 12], 'Whole Tone Scale');
+scales.add('Pentatonic Scale', [0, 2, 4, 7, 9, 12], 'Pentatonic Scale');
+scales.add('6 Note Blues Scale', [0, 3, 5, 6, 7, 10, 12], '6 Note Blues Scale');
+scales.add('Octotonic', [0, 2, 4, 5, 6, 8, 9, 11, 12], '6 Note Blues Scale');
 
 var chords = new Library('Chords');
               
