@@ -90,7 +90,8 @@
         padding: 0;
         width: 48px;
         height: 100%;
-        border: solid 1px red;
+        border: none;
+        background: none;
       }
     </style>
     <div class="wrapper">
@@ -140,7 +141,7 @@
           this.showSidepanel();
         }
 
-        this.$.sidepanelTouchTarget.addEventListener('dragstart', function() {
+        this.$.sidepanelTouchTarget.addEventListener('click', function() {
            _this.showSidepanel(); 
         });
         this.$.sidepanelTouchTarget.addEventListener('touchmove', function() {
