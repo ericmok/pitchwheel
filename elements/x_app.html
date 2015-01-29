@@ -133,7 +133,7 @@
         this.currentConstellation = window.libraries[0].constellations[0];
 
         console.log('currentConstellation ');
-        this.$.pitchClock.setFromConstellation(this.currentConstellation);
+        this.$.pitchClock.setFromConstellation(this.currentConstellation, {normalize: true});
 
         this.data = new Map();
 
@@ -189,7 +189,7 @@
         var constellation = ev.detail.constellation;
 
         //this.pitchClockEl.setFromConstellation({
-        this.$.pitchClock.setFromConstellation(constellation);
+        this.$.pitchClock.setFromConstellation(constellation, {normalize: true});
 
         this.currentConstellation = constellation;
       },
