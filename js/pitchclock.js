@@ -673,9 +673,12 @@ PitchClock.prototype.playInOrder = function() {
   var sortedControl = this.controls.sort(function(a,b) {
     return a.frequency > b.frequency;
   });
-    
+  
+  var enabledIndex = 0;  
   this.controls.forEach(function(control, index) {
-    control.play(index * 0.22);
+    if (!control._enabled) { return; }
+    control.play(enabledIndex * 0.22);
+    enabledIndex += 1;
   }.bind(this));
 };
 
