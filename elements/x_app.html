@@ -23,7 +23,11 @@
         margin: 0;
         padding: 10px;
 
-        background: #444;
+        padding-top: 20px;
+
+        /*background: #444;*/
+        /*background: #2A1332;*/
+        background: #5E3D46;
         color: #FFF;
         box-shadow: inset 0 0 9px 0px rgba(20, 20, 20, 0.4);
 
@@ -39,6 +43,8 @@
         max-height: 100%;
         overflow-x: hidden;
         overflow-y: scroll;
+
+        box-sizing: border-box;
       }
       .sidepanel-shown
       {
@@ -49,9 +55,11 @@
       paper-button
       {
         text-transform: none;
-        color: #4285F4;
+        /*color: #4285F4;*/
+        color: #35718D;
+        /*color: #78ADA5;*/
       }
-      paper-icon-button[icon="menu"]
+      paper-icon-button[icon="menu"], paper-icon-button[icon="close"]
       {
         position: absolute;
         top: 0;
@@ -76,6 +84,7 @@
     </style>
     <div class="wrapper">
       <div id="sidepanel" class="sidepanel">
+        <paper-icon-button icon="close" on-click="{{showSidepanel}}" ></paper-icon-button>
         <constellations-list id="constellationsList0" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
         <constellations-list id="constellationsList1" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
       </div>
@@ -111,6 +120,10 @@
         this.currentConstellation = window.libraries[0].constellations[0];
 
         this.data = new Map();
+
+        if (window.innerWidth >= 700) {
+          this.showSidepanel();
+        }
       },
       playInOrder: function() {
         this.$.pitchClock.playInOrder();
