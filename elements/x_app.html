@@ -40,7 +40,7 @@
     
         opacity: 0.9;
 
-        transition: all 0.7s ease;
+        transition: all 0.5s ease;
 
         max-height: 100%;
         overflow-x: hidden;
@@ -83,8 +83,18 @@
         align-items: center;
         align-content: center;
       }
+      #sidepanelTouchTarget
+      {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        width: 48px;
+        height: 100%;
+        border: solid 1px red;
+      }
     </style>
     <div class="wrapper">
+      <div id="sidepanelTouchTarget"></div>
       <div id="sidepanel" class="sidepanel">
         <paper-icon-button icon="close" on-click="{{showSidepanel}}" ></paper-icon-button>
         <constellations-list id="constellationsList0" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
@@ -129,6 +139,13 @@
         if (window.innerWidth >= 700) {
           this.showSidepanel();
         }
+
+        this.$.sidepanelTouchTarget.addEventListener('dragstart', function() {
+           _this.showSidepanel(); 
+        });
+        this.$.sidepanelTouchTarget.addEventListener('touchmove', function() {
+           _this.showSidepanel(); 
+        });
       },
       playInOrder: function() {
         this.$.pitchClock.playInOrder();
