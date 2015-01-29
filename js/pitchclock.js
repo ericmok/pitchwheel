@@ -691,7 +691,7 @@ PitchClock.prototype.setFromConstellation = function(constellation) {
   
   constellation.semitones.forEach(function(key, index) {
     
-    var pitch = Math.pow(this.freqStepRatio, 2 * key) * this.basePitch;
+    var pitch = Math.pow(this.freqStepRatio, ratio * key) * this.basePitch;
     
     var control = this.controls[index];
     if (control) {
