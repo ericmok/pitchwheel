@@ -88,14 +88,15 @@
         position: absolute;
         margin: 0;
         padding: 0;
-        width: 48px;
+        width: 24px;
         height: 100%;
         border: none;
         background: none;
+        z-index: 2;
       }
     </style>
     <div class="wrapper">
-      <div id="sidepanelTouchTarget"  touch-action="pan-y"></div>
+      <div id="sidepanelTouchTarget"></div>
       <div id="sidepanel" class="sidepanel">
         <paper-icon-button icon="close" on-click="{{showSidepanel}}" ></paper-icon-button>
         <constellations-list id="constellationsList0" currentkey="{{currentkey}}" on-select="{{selectConstellation}}"></constellations-list>
@@ -135,19 +136,25 @@
         console.log('currentConstellation ');
         this.$.pitchClock.setFromConstellation(this.currentConstellation, {normalize: true});
 
-        this.data = new Map();
+        //this.data = new Map();
 
         if (window.innerWidth >= 700) {
           this.showSidepanel();
         }
 
-        this.$.sidepanelTouchTarget.addEventListener('click', function() {
-           _this.showSidepanel(); 
-        });
+        // this.$.sidepanelTouchTarget.addEventListener('mousedown', function() {
+        //    _this.showSidepanel(); 
+        // });
 
-        this.$.sidepanelTouchTarget.addEventListener('touchmove', function() {
-            _this.showSidepanel(); 
+        this.$.sidepanelTouchTarget.addEventListener('touchstart', function() {
+            _this.showSidepanel(true); 
         });
+        // this.$.sidepanel.addEventListener('touchleave', function() {
+        //   if (this.shown) {
+        //     console.log('touchleave');
+        //     _this.showSidepanel();
+        //   } 
+        // });
       },
       playInOrder: function() {
         this.$.pitchClock.playInOrder();
@@ -155,8 +162,9 @@
       playAll: function() {
         this.$.pitchClock.toggle();
       },
-      showSidepanel: function() {
-        if (this.shown) {
+      showSidepanel: function(val) {
+        console.log('show');
+        if (this.shown || (val !== true)) {
           this.$.menu.style.opacity = 1;
           this.$.sidepanel.classList.remove('sidepanel-shown');
           this.shown = false;
