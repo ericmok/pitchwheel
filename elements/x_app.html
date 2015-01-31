@@ -142,19 +142,9 @@
           this.showSidepanel();
         }
 
-        // this.$.sidepanelTouchTarget.addEventListener('mousedown', function() {
-        //    _this.showSidepanel(); 
-        // });
-
         this.$.sidepanelTouchTarget.addEventListener('touchstart', function() {
             _this.showSidepanel(true); 
         });
-        // this.$.sidepanel.addEventListener('touchleave', function() {
-        //   if (this.shown) {
-        //     console.log('touchleave');
-        //     _this.showSidepanel();
-        //   } 
-        // });
       },
       playInOrder: function() {
         this.$.pitchClock.playInOrder();
