@@ -28,7 +28,7 @@ gulp.task('cordova', shell.task([
     'git commit -m "sync"',
     'echo "++Changing directories..."',
     'cd ../pitchwheelapp/www',
-    'echo "Pulling git..."',
+    'echo "++Pulling git..."',
     'git pull ../../www Cordova:Cordova',
     'echo "++Running..."',
     'cordova run android'
