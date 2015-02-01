@@ -4,6 +4,7 @@ var clean = require('gulp-clean');
 var rename = require('gulp-rename');
 var shell = require('gulp-shell');
 var browserify = require('gulp-browserify');
+var wrench = require('wrench');
 
 gulp.task('default', function() {
   
@@ -26,11 +27,6 @@ gulp.task('cordova', shell.task([
     'git checkout Cordova',
     'git add --all',
     'git commit -m "sync"',
-    'echo "++Changing directories..."',
-    'cd ../pitchwheelapp/www',
-    'pwd',
-    'echo "++Pulling git...',
-    'git pull ../../www Cordova:Cordova',
-    'echo "++Running..."',
-    'cordova run android'
+    'echo "++Changed directory"',
+    'cd ../pitchwheelapp/www/; git pull ../../www Cordova:Cordova; cordova run android'
 ]));
