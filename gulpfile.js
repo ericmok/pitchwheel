@@ -22,12 +22,14 @@ gulp.task('watch', function() {
 });
 
 gulp.task('cordova', shell.task([
-    'echo "Cordova"',
+    'echo "Cordova Build"',
     'git checkout Cordova',
     'git add --all',
     'git commit -m "sync"',
-    'cd ..',
-    'cd pitchwheelapp/www',
+    'echo "Changing directories..."',
+    'cd ../pitchwheelapp/www',
+    'echo "Pulling git..."',
     'git pull ../../www Cordova:Cordova',
+    'echo "Running..."',
     'cordova run android'
 ]));
