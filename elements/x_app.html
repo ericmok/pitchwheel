@@ -106,8 +106,6 @@
 
         console.log('currentConstellation ');
         this.$.pitchClock.setFromConstellation(this.currentConstellation, {normalize: true});
-
-        //this.data = new Map();
       },
       playInOrder: function() {
         this.$.pitchClock.playInOrder();
@@ -129,15 +127,8 @@
            this.$.coreDrawerPanel.togglePanel();
         }
 
-        // var constellation = {
-        //   name: ev.detail.name,
-        //   longName: ev.detail.longname,
-        //   semitones: ev.detail.semitones,
-        //   temperament: ev.detail.temperament
-        // };
         var constellation = ev.detail.constellation;
 
-        //this.pitchClockEl.setFromConstellation({
         this.$.pitchClock.setFromConstellation(constellation, {normalize: true});
 
         this.currentConstellation = constellation;
