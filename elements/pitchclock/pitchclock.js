@@ -775,9 +775,3 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     this.element.appendChild(tempGroup);
   }
 };
-
-
-module.exports = {
-  PitchClock: PitchClock
-};
-
