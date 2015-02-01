@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var watch = require('gulp-watch');
 var clean = require('gulp-clean');
 var rename = require('gulp-rename');
+var shell = require('gulp-shell');
 var browserify = require('gulp-browserify');
 
 gulp.task('default', function() {
@@ -19,3 +20,14 @@ gulp.task('watch', function() {
   gulp.watch('js/**', ['default']);
   
 });
+
+gulp.task('cordova', shell.task([
+    'echo "Cordova"',
+    'git checkout Cordova',
+    'git add --all',
+    'git commit -m "sync"',
+    'cd ..',
+    'cd pitchwheelapp/www',
+    'git pull ../../www Cordova:Cordova',
+    'cordova run android'
+]));
