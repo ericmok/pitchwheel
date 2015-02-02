@@ -639,16 +639,7 @@ PitchClock.prototype.calculateClosestControl = function(x, y) {
   return closestControl;
 };
 
-PitchClock.prototype.mousedown = function(ev) {
-
-};
-
-PitchClock.prototype.mousemove = function(ev) {
-
-};
-
-PitchClock.prototype.mouseup = function(ev) {
-  // TODO: use _this.width
+PitchClock.prototype.calculateNormalizedMouseCoordsFromMouseEvent = function(ev) {
   var boundingClientRect = ev.currentTarget.getBoundingClientRect();
   var x = ev.clientX - boundingClientRect.left - (boundingClientRect.width / 2);
   var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
@@ -658,8 +649,20 @@ PitchClock.prototype.mouseup = function(ev) {
   y = y / (boundingClientRect.height / 2);
   
   //console.log(x + ',' + y);
+  return { x: x, y: y };
+};
 
-  this.calculateClosestControl(x, y).pointToPitch(x, y);
+PitchClock.prototype.mousedown = function(ev) {
+
+};
+
+PitchClock.prototype.mousemove = function(ev) {
+
+};
+
+PitchClock.prototype.mouseup = function(ev) {
+  var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
+  this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
 };
 
 
