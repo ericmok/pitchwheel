@@ -37,7 +37,7 @@
         this.pitchClock.addControl(2*391.5); // 392 is equal temperament, but this is perfect fifth
         
         this.$.spinner.addEventListener('click', function() {
-          console.log('polymer-click');
+          //console.log('polymer-click');
           _this.fire('change', { pitchClock: _this.pitchClock });  
         });
       },
