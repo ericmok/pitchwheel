@@ -227,8 +227,8 @@ Take coordinate in the wheel and set the frequency from it.
 */
 Control.prototype.pointToPitch = function(x, y, options) {
 
-  var options = options || {};
-  var discreteTemperament = options.discreteTemperament || true;
+  var options = options || { discreteTemperament: true };
+  var discreteTemperament = options.discreteTemperament;
   //console.log('point to: (' + x.toFixed(2) + ',' + y.toFixed(2) + ')');
   
   var norm = Math.sqrt(x * x + y * y);  
@@ -247,11 +247,11 @@ Control.prototype.pointToPitch = function(x, y, options) {
     //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
     temperament01 = subdivisionScale / (this.ctx.temperament * this.subdivisions);
   }
-  
+
   // But temp will never equal 1, so we should never have 2 pi!
   temperament01 = temperament01 % 1;
   
-  console.log('Temperament to subdivision [' + (temperament01 * this.ctx.temperament) % this.ctx.temperament + ']');
+  //console.log('Temperament to subdivision [' + (temperament01 * this.ctx.temperament) % this.ctx.temperament + ']');
   console.log('Temperament01 [' + temperament01 + ']');
   
   // 100% = 12 steps = 1 whole octave
@@ -665,7 +665,9 @@ PitchClock.prototype.mousedown = function(ev) {
 PitchClock.prototype.mousemove = function(ev) {
   var mouse = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
   if (this.currentControl) {
-    this.currentControl.circle.classList.add('active');
+    //this.currentControl.circle.classList.add('active');
+    //this.currentControl.activelyPointTo(mouse.x, mouse.y);
+    this.currentControl.pointToPitch(mouse.x, mouse.y, {discreteTemperament: false});
   }
 };
 
@@ -673,7 +675,7 @@ PitchClock.prototype.mouseup = function(ev) {
   var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
   //this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
   this.currentControl.pointToPitch(mouseCoords.x, mouseCoords.y);
-  this.currentControl.circle.classList.remove('active');
+  // this.currentControl.circle.classList.remove('active');
   this.currentControl = null;
 };
 
