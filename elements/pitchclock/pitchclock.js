@@ -225,7 +225,10 @@ Control.prototype.disconnect = function() {
 /**
 Take coordinate in the wheel and set the frequency from it.
 */
-Control.prototype.pointToPitch = function(x, y) {
+Control.prototype.pointToPitch = function(x, y, options) {
+
+  var options = options || {};
+  var discreteTemperament = options.discreteTemperament || true;
   //console.log('point to: (' + x.toFixed(2) + ',' + y.toFixed(2) + ')');
   
   var norm = Math.sqrt(x * x + y * y);  
@@ -235,13 +238,15 @@ Control.prototype.pointToPitch = function(x, y) {
   var temperament01 = (angle / (2 * Math.PI));
   
   console.log('Temperament01 [' + temperament01 + ']');
-  
-  // Discretize by rounding to closest subdivision
-  var subdivisionScale = Math.round((temperament01 * this.ctx.temperament * this.subdivisions) % (this.ctx.temperament * this.subdivisions));
-  //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
-  // Floored so 2 * base pitch doesn't wind up on lower octave
-  //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
-  temperament01 = subdivisionScale / (this.ctx.temperament * this.subdivisions);
+
+  if (discreteTemperament) {
+    // Discretize by rounding to closest subdivision
+    var subdivisionScale = Math.round((temperament01 * this.ctx.temperament * this.subdivisions) % (this.ctx.temperament * this.subdivisions));
+    //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
+    // Floored so 2 * base pitch doesn't wind up on lower octave
+    //temperament01 = Math.round(temperament01 * this.ctx.temperament * 5) / (this.ctx.temperament * 5);
+    temperament01 = subdivisionScale / (this.ctx.temperament * this.subdivisions);
+  }
   
   // But temp will never equal 1, so we should never have 2 pi!
   temperament01 = temperament01 % 1;
@@ -653,16 +658,23 @@ PitchClock.prototype.calculateNormalizedMouseCoordsFromMouseEvent = function(ev)
 };
 
 PitchClock.prototype.mousedown = function(ev) {
-
+  var mouse = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
+  this.currentControl = this.calculateClosestControl(mouse.x, mouse.y);
 };
 
 PitchClock.prototype.mousemove = function(ev) {
-
+  var mouse = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
+  if (this.currentControl) {
+    this.currentControl.circle.classList.add('active');
+  }
 };
 
 PitchClock.prototype.mouseup = function(ev) {
   var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
-  this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
+  //this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
+  this.currentControl.pointToPitch(mouseCoords.x, mouseCoords.y);
+  this.currentControl.circle.classList.remove('active');
+  this.currentControl = null;
 };
 
 
