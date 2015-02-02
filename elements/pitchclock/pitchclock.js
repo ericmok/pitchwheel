@@ -384,6 +384,16 @@ function approxEquals(e1, e2, criteria) {
 }
 
 /**
+Points the control's svg in the direction of the coordinate
+*/
+Control.prototype.svgPointTo = function(x, y) {
+  this.line.setAttribute('x2', (x));
+  this.line.setAttribute('y2', (y));
+  this.circle.setAttribute('cx', (x));
+  this.circle.setAttribute('cy', (y));
+};
+
+/**
 Controls the line and circle
 */
 Control.prototype.display = function(angle, magnitude, text) {
@@ -415,12 +425,9 @@ Control.prototype.display = function(angle, magnitude, text) {
   x *= mx;
   y *= my;
   
-  this.line.setAttribute('x2', (x));
-  this.line.setAttribute('y2', (y));
-  this.circle.setAttribute('cx', (x));
-  this.circle.setAttribute('cy', (y));
-  
   console.log('cx,cy [' + x + ',' + y + ']');
+
+  this.svgPointTo(x, y);
   
   var tx = 0.18 * normalizedX + x;
   var ty = 0.18 * normalizedY + y;
