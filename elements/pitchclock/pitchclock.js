@@ -653,9 +653,20 @@ PitchClock.prototype.calculateClosestControl = function(x, y) {
 
 PitchClock.prototype.calculateNormalizedMouseCoordsFromMouseEvent = function(ev) {
   var boundingClientRect = ev.currentTarget.getBoundingClientRect();
-  var x = ev.clientX - boundingClientRect.left - (boundingClientRect.width / 2);
-  var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
   
+  var viewPoint = {};
+
+  if (ev.touches.length > 0) {
+    viewPoint.x = ev.touches[0].clientX;
+    viewPoint.y = ev.touches[0].clientY;
+  } else {
+    viewPoint.x = ev.clientX;
+    viewPoint.y = ev.clientY;
+  }
+
+  var x = viewPoint.x - boundingClientRect.left - (boundingClientRect.width / 2);
+  var y = viewPoint.y - boundingClientRect.top - (boundingClientRect.height / 2);
+ 
   // Normalized (Radius = 1)
   x = x / (boundingClientRect.width / 2);
   y = y / (boundingClientRect.height / 2);
@@ -672,8 +683,6 @@ PitchClock.prototype.mousedown = function(ev) {
 PitchClock.prototype.mousemove = function(ev) {
   var mouse = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
   if (this.currentControl) {
-    //this.currentControl.circle.classList.add('active');
-    //this.currentControl.activelyPointTo(mouse.x, mouse.y);
     this.currentControl.pointToPitch(mouse.x, mouse.y, {discreteTemperament: false});
   }
 };
@@ -681,9 +690,7 @@ PitchClock.prototype.mousemove = function(ev) {
 PitchClock.prototype.mouseup = function(ev) {
   if (this.currentControl) {
     var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
-    //this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
     this.currentControl.pointToPitch(mouseCoords.x, mouseCoords.y);
-    // this.currentControl.circle.classList.remove('active');
     this.currentControl = null;
   }
 };
