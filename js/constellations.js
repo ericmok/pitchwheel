@@ -128,13 +128,13 @@ chords.add('m', [0, 3, 7], 'Minor');
 chords.add('+', [0, 4, 8], 'Augmented');
 chords.add('dim', [0, 3, 6], 'Diminished');
 
-chords.add('Sus', [0, 5, 7]);
-chords.add('Sus2', [0, 2, 7]);
-chords.add('6', [0, 4, 7, 9], 'Optional 5th');
-chords.add('6/9', [0, 4, 9, 14]);
-chords.add('m6', [0, 3, 9]); //optional 5th
+chords.add('Sus', [0, 5, 7], 'Suspended Chord');
+chords.add('Sus2', [0, 2, 7], 'Suspended Chord');
+chords.add('6', [0, 4, 7, 9], 'Major 6th'); // Optional 5th
+chords.add('6/9', [0, 4, 9, 14], 'Major 6-9 (C6add9)');
+chords.add('m6', [0, 3, 9], 'Minor 6th'); // Optional 5th
 
-chords.add('M7', [0, 4, 7, 11], 'Major 7th (optional 5th)');
+chords.add('M7', [0, 4, 7, 11], 'Major 7th'); // Optional 5th
 chords.add('M7#5', [0, 4, 8, 11], 'Augmented major 7th');
 
 chords.add('dim7', [0, 3, 6, 9], 'Diminished 7th, Optional Flat 5th');
@@ -151,7 +151,7 @@ chords.add('m7b5', [0, 3, 6, 10], 'Half Diminished 7th / Minor 7 Flat Five');
 chords.add('m7#5', [0, 3, 8, 10], 'Minor 7th Sharp Five');
 chords.add('m7b9', [0, 3, 10, 13], 'Minor 7th Flat Nine');
 
-chords.add('9', [0, 4, 10, 14]);
+chords.add('9', [0, 4, 10, 14], 'Dominant Ninth'); 
 chords.add('m9', [0, 3, 10, 14], 'Minor 9th');
 chords.add('M9', [0, 4, 7, 11, 14], 'Major 9th, (optional 5th)');
 
