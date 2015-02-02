@@ -233,18 +233,8 @@ Take coordinate in the wheel and set the frequency from it.
 Control.prototype.pointToPitch = function(x, y) {
   //console.log('point to: (' + x.toFixed(2) + ',' + y.toFixed(2) + ')');
   
-  var norm = Math.sqrt(x * x + y * y);
-  
-  x = x / norm;
-  y = y / norm;
-  
-  // var angle = this.ctx.acos(x);
+  var norm = Math.sqrt(x * x + y * y);  
   var angle = this.ctx.getAngleForVector(x, y)
-  
-  // if (y <= 0) {
-  //   angle = 2 * Math.PI - angle;
-  // }
-  console.log('ANGLE ' + angle);
   
   // From (0, 2 * PI) to (0, 1), but not including 1, we wind down
   var temperament01 = (angle / (2 * Math.PI));
@@ -400,8 +390,6 @@ Control.prototype.display = function(angle, magnitude, text) {
 
   var _this = this;
 
-  // var x = this.ctx.cos(angle);// * (this.ctx.width / 8);
-  // var y = this.ctx.sin(angle);// * (this.ctx.width / 8);
   var vec = this.ctx.getVectorForAngle(angle);
   var x = vec.x;
   var y = vec.y;
@@ -453,8 +441,6 @@ Control.prototype.display = function(angle, magnitude, text) {
       var guideVal = (((Math.log(guide.ratio * this.frequency) - Math.log(this.basePitch)) / LOG_NORMALIZER) % 2) * 2 * Math.PI;
 
       var vec = _this.ctx.getVectorForAngle(guideVal);
-      // var gx = this.ctx.cos(guideVal);
-      // var gy = this.ctx.sin(guideVal);
       var gx = vec.x;
       var gy = vec.y;
 
@@ -486,11 +472,9 @@ function PitchClock(options) {
     var norm = Math.sqrt(x * x + y * y);
     var nx = x / norm;
     var ny = y / norm;
-    //var yAxis = { x: 0, y: -1 };
-    //var dotProduct = nx * yAxis.x + -ny * yAxis.y;
+    //y axis = (0, -1);
+    //dot product = nx * 0 + -ny * -1;
     var angle = Math.acos(-ny);
-
-    console.log('DEBUG ANGLE ' + angle);
 
     if (nx < 0) {
       // TODO: Hacky
@@ -505,22 +489,6 @@ function PitchClock(options) {
       x: Math.cos(angle - Math.PI / 2),
       y: Math.sin(angle - Math.PI / 2)
     };
-  };
-
-  this.cos = function(x) {
-    return Math.cos(x - Math.PI / 2);
-  };
-
-  this.acos = function(x) {
-    return Math.acos(x) + (Math.PI / 2);
-  };
-
-  this.sin = function(x) {
-    return Math.sin(x - Math.PI / 2);
-  };
-
-  this.asin = function(x) {
-    return Math.asin(x) + (Math.PI / 2);
   };
 
   this.audioCtx = null;
@@ -776,8 +744,6 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var temp = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     temp.setAttribute('x1', '0');
     temp.setAttribute('y1', '0');
-    // var tempX = (this.cos(i / this.temperaments.length * 2 * Math.PI));
-    // var tempY = (this.sin(i / this.temperaments.length * 2 * Math.PI));
     var vec = this.getVectorForAngle(i / this.temperaments.length * 2 * Math.PI);
     var tempX = vec.x;
     var tempY = vec.y;
@@ -799,8 +765,6 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var lowerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     lowerLine.setAttribute('x1', '0');
     lowerLine.setAttribute('y1', '0');
-    // var lowerLineX = (this.cos(i / this.temperaments.length * 2 * Math.PI));
-    // var lowerLineY = (this.sin(i / this.temperaments.length * 2 * Math.PI));
     var lowerLineX = vec.x;
     var lowerLineY = vec.y;
     
@@ -812,6 +776,7 @@ PitchClock.prototype.renderTemperamentGuides = function() {
     var annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     //annotation.setAttribute('x', (1.13 * (tempX)));
     //annotation.setAttribute('y', (1.13 * (tempY + 0.03)));
+    annotation.setAttribute('class', 'note-text');
     annotation.setAttribute('text-rendering', 'geometricPrecision');
     
     var translationString = ' translate(' + 100 * (1.13 * tempX) + ',' + 100 * (1.13 * tempY) + ')';
