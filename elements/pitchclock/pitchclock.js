@@ -679,11 +679,13 @@ PitchClock.prototype.mousemove = function(ev) {
 };
 
 PitchClock.prototype.mouseup = function(ev) {
-  var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
-  //this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
-  this.currentControl.pointToPitch(mouseCoords.x, mouseCoords.y);
-  // this.currentControl.circle.classList.remove('active');
-  this.currentControl = null;
+  if (this.currentControl) {
+    var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
+    //this.calculateClosestControl(mouseCoords.x, mouseCoords.y).pointToPitch(mouseCoords.x, mouseCoords.y);
+    this.currentControl.pointToPitch(mouseCoords.x, mouseCoords.y);
+    // this.currentControl.circle.classList.remove('active');
+    this.currentControl = null;
+  }
 };
 
 
