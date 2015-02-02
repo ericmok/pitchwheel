@@ -525,9 +525,6 @@ function PitchClock(options) {
   
   this.mousemove = function(ev) {
     
-    // Make sure mouse is down
-    //if (ev.which !== 1) { return; }
-    
     // TODO: use _this.width
     var boundingClientRect = ev.currentTarget.getBoundingClientRect();
     var x = ev.clientX - boundingClientRect.left - (boundingClientRect.width / 2);
@@ -585,7 +582,7 @@ function PitchClock(options) {
     if (!this.initialized) {
       this.audioCtx = new window.AudioContext();
       this.gain = this.audioCtx.createGain();
-      this.gain.gain.value = 0.3;
+      this.gain.gain.value = 0.4;
       this.gain.connect(this.audioCtx.destination);
 
       this.element = el; //document.getElementById(id);
@@ -620,7 +617,6 @@ function PitchClock(options) {
     this.initialized = true;
   };
   
-
   Object.defineProperty(this, 'spinnerRadius', {
     get: function() {
       return _this.spinner.getAttribute('r');
@@ -630,53 +626,28 @@ function PitchClock(options) {
       _this.spinner.setAttribute('r', val);
     }
   });
+};
+
+PitchClock.prototype.play = function() {  
+  // TODO: add duration  
+  this.controls.forEach(function(control, index) {
+    control.play(index * 0);
+  }.bind(this));
+  this.playing = true;
+};
+
+PitchClock.prototype.toggle = function() {
+  this.play();
+};
+
+PitchClock.prototype.addControl = function(hz) {
+  var control = new Control(this, hz);
+  this.controls.push(control);
+  control.connect(this.gain);
+      
+  this.element.appendChild(control.element);
   
-  this.play = function() {
-    //var now = this.audioCtx.currentTime;
-    //this.gain.gain.cancelScheduledValues(now);
-    
-    //var multiplier = 0.3;
-    
-    //this.gain.gain.setValueAtTime(this.gain.gain.value, now);
-    //this.gain.gain.linearRampToValueAtTime(multiplier * 0.65, now + 0.04);
-    //this.gain.gain.linearRampToValueAtTime(multiplier * 0.5, now + 0.09);
-    //this.gain.gain.exponentialRampToValueAtTime(multiplier * 0.4, now + 0.2);
-    //this.gain.gain.linearRampToValueAtTime(multiplier * 0.3, now + 0.6);
-    //this.gain.gain.setTargetAtTime(0, now + 0.9, 0.7);
-    //this.gain.gain.value = 0.3;
-    
-    this.controls.forEach(function(control, index) {
-      //control.play(index * 0.22);
-      control.play(index * 0);
-    }.bind(this));
-    
-    this.playing = true;
-  };
-  this.stop = function() {
-    this.gain.gain.value = 0;
-    this.playing = false;
-  };
-  
-  this.toggle = function() {
-//    this.playing = !this.playing;
-//    if (this.playing) { 
-//      this.play();
-//    } else {
-//      this.stop();
-//    }
-    this.play();
-  };
-  
-  this.addControl = function(hz) {
-    var control = new Control(this, hz);
-    this.controls.push(control);
-    //control.gain.connect(this.gain);
-    control.connect(this.gain);
-        
-    this.element.appendChild(control.element);
-    
-    return control;
-  };
+  return control;
 };
 
 /**
