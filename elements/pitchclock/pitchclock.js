@@ -464,6 +464,8 @@ function PitchClock(options) {
   
   this.playing = false;
 
+  // Currently mouse-down'd control
+  this.activeControl = null;
   
   this.getAngleForVector = function(x, y) {
     var norm = Math.sqrt(x * x + y * y);
@@ -555,9 +557,17 @@ PitchClock.prototype.initialize = function(el) {
     this.spinner.setAttribute('stroke-width', '0.01');
     this.spinner.setAttribute('fill', '#EEEEEE');
 
-    this.element.addEventListener('mousedown', this.mousemove.bind(this));
-    this.element.addEventListener('touchstart', this.mousemove.bind(this));
-    
+    // this.element.addEventListener('mousedown', this.mousemove.bind(this));
+    // this.element.addEventListener('touchstart', this.mousemove.bind(this));
+    this.element.addEventListener('mousedown', this.mousedown.bind(this));
+    this.element.addEventListener('touchstart', this.mousedown.bind(this));
+
+    this.element.addEventListener('mousemove', this.mousemove.bind(this));
+    this.element.addEventListener('touchmove', this.mousemove.bind(this));    
+
+    this.element.addEventListener('mouseup', this.mouseup.bind(this));
+    this.element.addEventListener('touchend', this.mouseup.bind(this));
+
     this.element.appendChild(this.spinner);
     console.log('initialized');
     console.log(this.element);
@@ -573,7 +583,19 @@ PitchClock.prototype.initialize = function(el) {
   this.initialized = true;
 };
 
+PitchClock.prototype.calculateClosestControl = function(x, y) {
+
+};
+
+PitchClock.prototype.mousedown = function(ev) {
+
+};
+
 PitchClock.prototype.mousemove = function(ev) {
+
+};
+
+PitchClock.prototype.mouseup = function(ev) {
   // TODO: use _this.width
   var boundingClientRect = ev.currentTarget.getBoundingClientRect();
   var x = ev.clientX - boundingClientRect.left - (boundingClientRect.width / 2);
