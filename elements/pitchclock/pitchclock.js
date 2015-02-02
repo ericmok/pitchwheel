@@ -583,8 +583,60 @@ PitchClock.prototype.initialize = function(el) {
   this.initialized = true;
 };
 
+/**
+Given x and y coords, go look for control that is closest to cursor
+*/
 PitchClock.prototype.calculateClosestControl = function(x, y) {
 
+  // Normalize if we only want to select pitches by closest angle
+  // and not by closest circle handle
+  var normalizePitchControl = false;
+
+  // Normalize mouse coords too?
+  // var norm = Math.sqrt(x*x + y*y);
+  // x = x / norm;
+  // y = y / norm;    
+  
+  var closest = 100;
+  var closestControl = null;
+  
+  this.controls.forEach(function(control, index) {
+    
+    if (!control.enabled) {return;}
+      
+    // console.log('pc circle: ' + control.circle.getAttribute('cx') + ',' + control.circle.getAttribute('cy'));
+    // console.log('mouse: ' + x + ',' + y);
+
+    var cx = control.circle.getAttribute('cx');
+    var cy = control.circle.getAttribute('cy');
+    
+    var pcx = cx;
+    var pcy = cy;
+
+    if (normalizePitchControl) {
+      // Normalize if we want to select pitches by their angles
+      var pcNorm = Math.sqrt(cx * cx + cy * cy);
+      pcx = pcx / pcNorm;
+      pcy = pcy / pcNorm;
+    }
+
+    var controlVec = {
+      x: pcx, y: pcy
+    };
+    
+    // console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
+    // console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
+    
+    var distance = Math.sqrt(Math.pow(controlVec.x - x, 2) + Math.pow(controlVec.y - y, 2));
+    console.log('distance: ' + distance);
+
+    if (distance < closest) {
+      closest = distance;
+      closestControl = control;
+    }
+  }.bind(this));
+  
+  return closestControl;
 };
 
 PitchClock.prototype.mousedown = function(ev) {
@@ -602,47 +654,12 @@ PitchClock.prototype.mouseup = function(ev) {
   var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
   
   // Normalized (Radius = 1)
-  var mx = x = x / (boundingClientRect.width / 2);
-  var my = y = y / (boundingClientRect.height / 2);
+  x = x / (boundingClientRect.width / 2);
+  y = y / (boundingClientRect.height / 2);
   
   //console.log(x + ',' + y);
-  
-  var norm = Math.sqrt(x*x + y*y);
-  x = x / norm;
-  y = y / norm;    
-  
-  var closest = 100;
-  var closestControl = null;
-  
-  this.controls.forEach(function(control, index) {
-    
-    if (!control.enabled) {return;}
-      
-    // console.log('pc circle: ' + control.circle.getAttribute('cx') + ',' + control.circle.getAttribute('cy'));
-    // console.log('mouse: ' + x + ',' + y);
 
-    var cx = control.circle.getAttribute('cx');
-    var cy = control.circle.getAttribute('cy');
-    
-    var pcx = cx;
-    var pcy = cy;
-    var pcNorm = Math.sqrt(cx * cx + cy * cy);
-    pcx = pcx / pcNorm;
-    pcy = pcy / pcNorm;
-    
-    // console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
-    // console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
-    
-    var distance = Math.sqrt(Math.pow(pcx - x, 2) + Math.pow(pcy - y, 2));
-    console.log('distance: ' + distance);
-
-    if (distance < closest) {
-      closest = distance;
-      closestControl = control;
-    }
-  }.bind(this));
-  
-  closestControl.pointToPitch(mx, my);
+  this.calculateClosestControl(x, y).pointToPitch(x, y);
 };
 
 
