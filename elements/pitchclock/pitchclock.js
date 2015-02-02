@@ -1,9 +1,4 @@
 LOG_NORMALIZER = Math.log(2) - Math.log(1);
-//TEMPERAMENT = 12;
-//INVERSE_TEMPERAMENT = 1.0 / TEMPERAMENT;
-//TEMPERAMENT_12_FREQ_STEP = Math.pow(2, 1.0/12);
-//BASE_PITCH = 220;
-
 
 function Voice(audioCtx) {
   this.ctx = audioCtx;
