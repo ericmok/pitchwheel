@@ -543,7 +543,7 @@ PitchClock.prototype.initialize = function(el) {
     this.gain.gain.value = 0.4;
     this.gain.connect(this.audioCtx.destination);
 
-    this.element = el; //document.getElementById(id);
+    this.element = el;
     this.element.setAttribute('viewBox', '-1 -1 2 2');
     this.element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     //this.element.setAttribute('text-rendering', 'geometricPrecision');
@@ -555,8 +555,8 @@ PitchClock.prototype.initialize = function(el) {
     this.spinner.setAttribute('stroke-width', '0.01');
     this.spinner.setAttribute('fill', '#EEEEEE');
 
-    this.element.addEventListener('mousedown', this.mousemove);
-    this.element.addEventListener('touchstart', this.mousemove);
+    this.element.addEventListener('mousedown', this.mousemove.bind(this));
+    this.element.addEventListener('touchstart', this.mousemove.bind(this));
     
     this.element.appendChild(this.spinner);
     console.log('initialized');
@@ -592,7 +592,7 @@ PitchClock.prototype.mousemove = function(ev) {
   var closest = 100;
   var closestControl = null;
   
-  _this.controls.forEach(function(control, index) {
+  this.controls.forEach(function(control, index) {
     
     if (!control.enabled) {return;}
       
