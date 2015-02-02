@@ -457,11 +457,13 @@ function PitchClock(options) {
   //this.temperament = options.temperament || 12;
   this.basePitch = options.basePitch || 220;
   
-  Object.defineProperty(this, 'frequencyRatioForTemperament', {
-    get: function() {
-      return Math.pow(2, 1 / _this.temperament);
-    }
-  });
+  this.audioCtx = null;
+  this.initialized = false;
+  this.gain = null;
+  this.controls = [];
+  
+  this.playing = false;
+
   
   this.getAngleForVector = function(x, y) {
     var norm = Math.sqrt(x * x + y * y);
@@ -485,13 +487,6 @@ function PitchClock(options) {
       y: Math.sin(angle - Math.PI / 2)
     };
   };
-
-  this.audioCtx = null;
-  this.initialized = false;
-  this.gain = null;
-  this.controls = [];
-  
-  this.playing = false;
   
   /**
   Radius of the wheel. Currently parsed as a percentage.
@@ -517,106 +512,16 @@ function PitchClock(options) {
       return _this.temperaments.length;
     }
   });
+  Object.defineProperty(this, 'frequencyRatioForTemperament', {
+    get: function() {
+      return Math.pow(2, 1 / _this.temperament);
+    }
+  });
   Object.defineProperty(this, 'freqStepRatio', {
     get: function() {
       return Math.pow(2, 1/_this.temperaments.length);
     }
   });
-  
-  this.mousemove = function(ev) {
-    
-    // TODO: use _this.width
-    var boundingClientRect = ev.currentTarget.getBoundingClientRect();
-    var x = ev.clientX - boundingClientRect.left - (boundingClientRect.width / 2);
-    var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
-    
-    // Normalized (Radius = 1)
-    var mx = x = x / (boundingClientRect.width / 2);
-    var my = y = y / (boundingClientRect.height / 2);
-    
-    //console.log(x + ',' + y);
-    
-    var norm = Math.sqrt(x*x + y*y);
-    x = x / norm;
-    y = y / norm;    
-    
-    var closest = 100;
-    var closestControl = null;
-    
-    _this.controls.forEach(function(control, index) {
-      
-      if (!control.enabled) {return;}
-        
-      // console.log('pc circle: ' + control.circle.getAttribute('cx') + ',' + control.circle.getAttribute('cy'));
-      // console.log('mouse: ' + x + ',' + y);
-
-      var cx = control.circle.getAttribute('cx');
-      var cy = control.circle.getAttribute('cy');
-      
-      var pcx = cx;
-      var pcy = cy;
-      var pcNorm = Math.sqrt(cx * cx + cy * cy);
-      pcx = pcx / pcNorm;
-      pcy = pcy / pcNorm;
-      
-      // console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
-      // console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
-      
-      var distance = Math.sqrt(Math.pow(pcx - x, 2) + Math.pow(pcy - y, 2));
-      console.log('distance: ' + distance);
-
-      if (distance < closest) {
-        closest = distance;
-        closestControl = control;
-      }
-    }.bind(this));
-    
-    closestControl.pointToPitch(mx, my);
-  };
-  
-  /**
-  Initialize Audio Contexts
-  */
-  this.initialize = function(el) {
-    
-    if (!this.initialized) {
-      this.audioCtx = new window.AudioContext();
-      this.gain = this.audioCtx.createGain();
-      this.gain.gain.value = 0.4;
-      this.gain.connect(this.audioCtx.destination);
-
-      this.element = el; //document.getElementById(id);
-      this.element.setAttribute('viewBox', '-1 -1 2 2');
-      this.element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      //this.element.setAttribute('text-rendering', 'geometricPrecision');
-      this.spinner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      this.spinner.setAttribute('cx', '0');
-      this.spinner.setAttribute('cy', '0');
-      this.spinner.setAttribute('r', this._SPINNER_RADIUS);
-      this.spinner.setAttribute('stroke', 'rgb(236,200,166)');
-      this.spinner.setAttribute('stroke-width', '0.01');
-      this.spinner.setAttribute('fill', '#EEEEEE');
-
-      //this.spinner.addEventListener('mousedown', this.mousemove);
-      //this.spinner.addEventListener('touchstart', this.mousemove);
-      this.element.addEventListener('mousedown', this.mousemove);
-      this.element.addEventListener('touchstart', this.mousemove);
-      
-      this.element.appendChild(this.spinner);
-      console.log('initialized');
-      console.log(this.element);
-      console.log(this.spinner);
-      
-      var rect = this.element.getBoundingClientRect();
-      this.width = rect.width;
-      this.height = rect.height;
-      
-      this.renderTemperamentGuides();
-    }
-    
-    this.initialized = true;
-  };
-  
   Object.defineProperty(this, 'spinnerRadius', {
     get: function() {
       return _this.spinner.getAttribute('r');
@@ -625,8 +530,99 @@ function PitchClock(options) {
       _this._SPINNER_RADIUS = val;
       _this.spinner.setAttribute('r', val);
     }
-  });
+  });  
 };
+
+PitchClock.prototype.initialize = function(el) {
+  if (!this.initialized) {
+    /**
+    Initialize Audio Contexts
+    */
+    this.audioCtx = new window.AudioContext();
+    this.gain = this.audioCtx.createGain();
+    this.gain.gain.value = 0.4;
+    this.gain.connect(this.audioCtx.destination);
+
+    this.element = el; //document.getElementById(id);
+    this.element.setAttribute('viewBox', '-1 -1 2 2');
+    this.element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    //this.element.setAttribute('text-rendering', 'geometricPrecision');
+    this.spinner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    this.spinner.setAttribute('cx', '0');
+    this.spinner.setAttribute('cy', '0');
+    this.spinner.setAttribute('r', this._SPINNER_RADIUS);
+    this.spinner.setAttribute('stroke', 'rgb(236,200,166)');
+    this.spinner.setAttribute('stroke-width', '0.01');
+    this.spinner.setAttribute('fill', '#EEEEEE');
+
+    this.element.addEventListener('mousedown', this.mousemove);
+    this.element.addEventListener('touchstart', this.mousemove);
+    
+    this.element.appendChild(this.spinner);
+    console.log('initialized');
+    console.log(this.element);
+    console.log(this.spinner);
+    
+    var rect = this.element.getBoundingClientRect();
+    this.width = rect.width;
+    this.height = rect.height;
+    
+    this.renderTemperamentGuides();
+  }
+  
+  this.initialized = true;
+};
+
+PitchClock.prototype.mousemove = function(ev) {
+  // TODO: use _this.width
+  var boundingClientRect = ev.currentTarget.getBoundingClientRect();
+  var x = ev.clientX - boundingClientRect.left - (boundingClientRect.width / 2);
+  var y = ev.clientY - boundingClientRect.top - (boundingClientRect.height / 2);
+  
+  // Normalized (Radius = 1)
+  var mx = x = x / (boundingClientRect.width / 2);
+  var my = y = y / (boundingClientRect.height / 2);
+  
+  //console.log(x + ',' + y);
+  
+  var norm = Math.sqrt(x*x + y*y);
+  x = x / norm;
+  y = y / norm;    
+  
+  var closest = 100;
+  var closestControl = null;
+  
+  _this.controls.forEach(function(control, index) {
+    
+    if (!control.enabled) {return;}
+      
+    // console.log('pc circle: ' + control.circle.getAttribute('cx') + ',' + control.circle.getAttribute('cy'));
+    // console.log('mouse: ' + x + ',' + y);
+
+    var cx = control.circle.getAttribute('cx');
+    var cy = control.circle.getAttribute('cy');
+    
+    var pcx = cx;
+    var pcy = cy;
+    var pcNorm = Math.sqrt(cx * cx + cy * cy);
+    pcx = pcx / pcNorm;
+    pcy = pcy / pcNorm;
+    
+    // console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
+    // console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
+    
+    var distance = Math.sqrt(Math.pow(pcx - x, 2) + Math.pow(pcy - y, 2));
+    console.log('distance: ' + distance);
+
+    if (distance < closest) {
+      closest = distance;
+      closestControl = control;
+    }
+  }.bind(this));
+  
+  closestControl.pointToPitch(mx, my);
+};
+
 
 PitchClock.prototype.play = function() {  
   // TODO: add duration  
