@@ -656,12 +656,12 @@ PitchClock.prototype.calculateNormalizedMouseCoordsFromMouseEvent = function(ev)
   
   var viewPoint = {};
 
-  if (ev.touches.length > 0) {
-    viewPoint.x = ev.touches[0].clientX;
-    viewPoint.y = ev.touches[0].clientY;
+  if (ev.changedTouches) {
+    viewPoint.x = ev.changedTouches[0].clientX;
+    viewPoint.y = ev.changedTouches[0].clientY;
   } else {
-    viewPoint.x = ev.clientX;
-    viewPoint.y = ev.clientY;
+     viewPoint.x = ev.clientX;
+     viewPoint.y = ev.clientY;
   }
 
   var x = viewPoint.x - boundingClientRect.left - (boundingClientRect.width / 2);
@@ -678,6 +678,7 @@ PitchClock.prototype.calculateNormalizedMouseCoordsFromMouseEvent = function(ev)
 PitchClock.prototype.mousedown = function(ev) {
   var mouse = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
   this.currentControl = this.calculateClosestControl(mouse.x, mouse.y);
+  this.currentControl.pointToPitch(mouse.x, mouse.y, {discreteTemperament: false});
 };
 
 PitchClock.prototype.mousemove = function(ev) {
