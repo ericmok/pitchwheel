@@ -188,7 +188,7 @@ function Control(ctx, pitchClass, options) {
   
   this.text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   this.text.setAttribute('text-rendering', 'geometricPrecision');
-  this.text.setAttribute('alignment-baseline', 'baseline');
+  this.text.setAttribute('alignment-baseline', 'central');
   this.text.setAttribute('text-anchor', 'middle');
   this.text.setAttribute('fill', '#AAAAAA');
   this.text.setAttribute('stroke-width', '0.005');
