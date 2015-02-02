@@ -63,6 +63,11 @@
         top: 10px;
         left: 10px;
       }
+
+      .long-name
+      {
+        margin-top: -25px;
+      }
     </style>
     <div class="wrapper">
       <core-drawer-panel id="coreDrawerPanel">
@@ -74,8 +79,9 @@
           <div class="app">
               <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
               <paper-button on-click="{{showSidepanel}}">
-                <h1 id="chordTitle">({{currentkey}}{{currentConstellation.name}}) {{currentConstellation.longName}}</h1>
+                <h1 id="chordTitle">{{currentkey}} {{currentConstellation.name}}</h1>
               </paper-button>
+              <div class="long-name">{{currentConstellation.longName}}</div>
               <div style="width: 250px; height: 250px; margin: 50px; cursor: pointer;">
                 <pitch-clock on-change="{{pitchClockChange}}" id="pitchClock"></pitch-clock>
               </div>
