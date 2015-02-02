@@ -384,6 +384,27 @@ function approxEquals(e1, e2, criteria) {
 }
 
 /**
+Decorates the svg to show it is hovered
+*/
+Control.prototype.svgHoverStyle = function() {
+  var r = this.circle.getAttribute('r');
+  var width = this.line.getAttribute('stroke-width');
+  this.circle.setAttribute('r', r * 4);
+  this.line.setAttribute('stroke-width', width * 1.4);
+};
+
+/**
+Decorates the svg to show it is unhovered
+TODO: Make these styles more accessible
+*/
+Control.prototype.svgUnhoverStyle = function() {
+  var r = this.circle.getAttribute('r');
+  var width = this.line.getAttribute('stroke-width');
+  this.circle.setAttribute('r', r / 4);
+  this.line.setAttribute('stroke-width', width / 1.4);
+};
+
+/**
 Points the control's svg in the direction of the coordinate
 */
 Control.prototype.svgPointTo = function(x, y) {
@@ -679,6 +700,7 @@ PitchClock.prototype.mousedown = function(ev) {
   var mouse = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
   this.currentControl = this.calculateClosestControl(mouse.x, mouse.y);
   this.currentControl.pointToPitch(mouse.x, mouse.y, {discreteTemperament: false});
+  this.currentControl.svgHoverStyle();
 };
 
 PitchClock.prototype.mousemove = function(ev) {
@@ -692,6 +714,7 @@ PitchClock.prototype.mouseup = function(ev) {
   if (this.currentControl) {
     var mouseCoords = this.calculateNormalizedMouseCoordsFromMouseEvent(ev);
     this.currentControl.pointToPitch(mouseCoords.x, mouseCoords.y);
+    this.currentControl.svgUnhoverStyle();
     this.currentControl = null;
   }
 };
