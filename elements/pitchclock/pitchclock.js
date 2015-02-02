@@ -636,8 +636,8 @@ PitchClock.prototype.calculateClosestControl = function(x, y) {
       x: pcx, y: pcy
     };
     
-    // console.log('pcx - x: (', pcx + ') - (' + x + ') = ' + (pcx - x));
-    // console.log('pcy - y: (', pcy + ') - (' + y + ') = ' + (pcy - y));
+    console.log('pcx - x: (', controlVec.x + ') - (' + x + ') = ' + (controlVec.x - x));
+    console.log('pcy - y: (', controlVec.y + ') - (' + y + ') = ' + (controlVec.y - y));
     
     var distance = Math.sqrt(Math.pow(controlVec.x - x, 2) + Math.pow(controlVec.y - y, 2));
     console.log('distance: ' + distance);
