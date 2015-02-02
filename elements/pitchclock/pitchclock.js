@@ -199,10 +199,10 @@ function Control(ctx, pitchClass, options) {
   this.line.setAttribute('y1', '0');
   
   this.guides = [];
-  this.guides.push({
-    line: document.createElementNS('http://www.w3.org/2000/svg', 'line'),
-    ratio: (3/2)
-  });
+  // this.guides.push({
+  //   line: document.createElementNS('http://www.w3.org/2000/svg', 'line'),
+  //   ratio: (3/2)
+  // });
   
   for (var i = 0; i < this.guides.length; i++) {
     this.guides[i].line.setAttribute('x1', '0');
